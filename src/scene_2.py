@@ -1,6 +1,8 @@
 import sys
 from pathlib import Path
 
+from utils.artifacts import *
+
 CMD = Path(sys.argv[0]).name.lower()
 if "manimgl" in CMD:
     from manimlib import *
@@ -19,7 +21,6 @@ DIM2 = "#615B5B"
 
 
 class ContextLength(Scene):
-    # ── helpers ────────────────────────────────────────────────────────────────
     def _sepia_label(self, text, font_size=22):
         return Text(text, font_size=font_size, color=SEPIA)
 
@@ -291,11 +292,7 @@ class ContextLength(Scene):
         # ================================================================
 
         # ── sentence with blank ──────────────────────────────────────────
-        prompt_words = ["The", "capital", "of", "France", "is"]
-        prompt_mobs = VGroup(
-            *[Text(w, font_size=36, color=WHITE) for w in prompt_words]
-        )
-        prompt_mobs.arrange(RIGHT, buff=0.25)
+        q_quiz = Text("The capital of France is", font_size=30, color=ACCENT)
 
         blank_box = RoundedRectangle(
             width=1.8,
@@ -308,17 +305,14 @@ class ContextLength(Scene):
         )
         question_marks = Text("???", font_size=30, color=ACCENT)
 
-        blank_box.next_to(prompt_mobs, RIGHT, buff=0.3)
+        blank_box.next_to(q_quiz, RIGHT)
         question_marks.move_to(blank_box.get_center())
         blank_grp = VGroup(blank_box, question_marks)
 
-        sentence_grp = VGroup(prompt_mobs, blank_grp).move_to(UP * 1.0)
+        sentence_grp = VGroup(q_quiz, blank_grp).move_to(UP * 1.0)
 
         self.play(
-            LaggedStart(
-                *[FadeIn(w, shift=UP * 0.15) for w in prompt_mobs],
-                lag_ratio=0.12,
-            ),
+            Write(q_quiz),
             run_time=1.0,
         )
         self.play(
@@ -349,43 +343,38 @@ class ContextLength(Scene):
 
         # ── "But what if we don't know?" — library illustration ──────────
         self.play(
-            sentence_grp.animate.shift(UP * 1.5).scale(0.6).set_opacity(0.35),
-            answer.animate.shift(UP * 1.5).scale(0.6).set_opacity(0.35),
-            run_time=0.7,
+            FadeOut(answer),
+            FadeIn(question_marks),
+            run_time=1.5,
         )
 
-        # Build a tiny bookshelf icon — stacked book rectangles
-        books = VGroup()
-        book_colors = ["#8A7676", "#615B5B", "#C8A96E", "#8A7676", "#615B5B"]
-        for i, bc in enumerate(book_colors):
-            b = Rectangle(
-                width=0.28 + (i % 3) * 0.04,
-                height=1.3 + (i % 2) * 0.2,
-                color=bc,
-                fill_color=bc,
-                fill_opacity=0.5,
-                stroke_width=1.2,
-            )
-            books.add(b)
-        books.arrange(RIGHT, buff=0.06, aligned_edge=DOWN)
-
-        shelf_line = Line(
-            books.get_corner(DL) + LEFT * 0.15,
-            books.get_corner(DR) + RIGHT * 0.15,
-            color=SEPIA,
-            stroke_width=2,
-        )
-        bookshelf = VGroup(books, shelf_line).scale(0.9).move_to(DOWN * 0.6)
-
-        reading_label = Text("learning from patterns…", font_size=20, color=DIM)
-        reading_label.next_to(bookshelf, DOWN, buff=0.35)
-
-        self.play(
-            FadeIn(bookshelf, scale=0.7),
-            run_time=0.8,
-        )
-        self.play(Write(reading_label), run_time=0.7)
         self.wait(1.0)
+        self.play(
+            FadeOut(sentence_grp),
+            run_time=1.5,
+        )
+
+        background = make_background()
+        shelves = make_shelves()
+        lamp = make_reading_lamp()
+
+        self.add(background)
+        self.play(
+            outline_first(shelves, run_time=2.2, lag_ratio=0.14),
+        )
+        self.play(
+            FadeIn(lamp),
+            run_time=1.8,
+        )
+
+        self.wait(5.0)
+
+        label = Text("learning from patterns ...").scale(0.5)
+        label.set_color("#888888")
+        label.to_edge(DOWN, buff=0.6)
+        self.play(Write(label), run_time=0.8)
+
+        self.wait(1.5)
 
         # ── transition — sweep everything out ────────────────────────────
         self.play(
@@ -566,7 +555,7 @@ class ContextLength(Scene):
 
         # ── "not geography, just statistics" ─────────────────────────────
         stat_note = Text(
-            "Not knowledge — just statistics.",
+            "Not knowledge - just statistics.",
             font_size=22,
             color=DIM,
         )
