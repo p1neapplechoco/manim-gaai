@@ -87,10 +87,12 @@ class ContextLength(Scene):
         self.play(digit_mobs.animate.scale(1.1), run_time=0.08)
         self.play(digit_mobs.animate.scale(1 / 1.1), run_time=0.14)
 
+        # [1:38] The year was 1913
         self.play(
             digit_mobs.animate.scale(1 / 3).to_corner(UL, buff=0.3),
             run_time=0.8,
         )
+        self.wait(4.0)
 
         self._year_group = VGroup(digit_mobs)
 
@@ -180,7 +182,8 @@ class ContextLength(Scene):
 
         self.play(FadeIn(book, scale=0.7), run_time=0.7)
         self.play(Write(action), run_time=0.8)
-        self.wait(1.0)
+        # [1:41] Long before ChatGPT... Andrey Markov was studying text
+        self.wait(6.0)
 
         self._bio_grp = bio_grp
         self._book_grp = VGroup(book, action)
@@ -199,11 +202,13 @@ class ContextLength(Scene):
 
         self.play(Write(not_label), run_time=0.7)
         self.play(FadeIn(wrong_q, shift=UP * 0.1), run_time=0.6)
-        self.wait(0.4)
+        # [1:55] He was not reading text the way we usually do
+        self.wait(2.0)
 
         strike = self._strike(wrong_q)
         self.play(Create(strike), run_time=0.45)
-        self.wait(0.3)
+        # [1:59] He was not asking "What does this poem mean?"
+        self.wait(1.5)
 
         self.play(
             VGroup(not_label, wrong_q, strike).animate.set_opacity(0).shift(UP * 0.5),
@@ -257,7 +262,8 @@ class ContextLength(Scene):
         tracker = ValueTracker(0)
         self.play(tracker.animate.set_value(1.0), run_time=0.8)
 
-        self.wait(0.5)
+        # [2:03] Instead asking: can I predict what comes next?
+        self.wait(3.0)
 
         corners = [box.get_corner(c) for c in [UL, UR, DL, DR]]
         self.play(
@@ -273,7 +279,7 @@ class ContextLength(Scene):
             run_time=0.7,
         )
 
-        self.wait(0.5)
+        self.wait(2.0)
         self.play(
             VGroup(box, part1, part2, instead, self._year_group).animate.set_opacity(
                 0.0
@@ -286,6 +292,8 @@ class ContextLength(Scene):
             *[FadeOut(m) for m in self.mobjects],
             run_time=0.6,
         )
+        # [2:13] Let's start with a simple game
+        self.wait(3.0)
 
         # ================================================================
         #  PART 1 — THE SIMPLE GAME : "The capital of France is ___"
@@ -320,7 +328,8 @@ class ContextLength(Scene):
             Write(question_marks),
             run_time=0.7,
         )
-        self.wait(0.6)
+        # [2:16] "The capital of France is..."
+        self.wait(3.0)
 
         # ── reveal "Paris" ───────────────────────────────────────────────
         answer = Text("Paris", font_size=36, color=GOLD, weight=BOLD)
@@ -339,7 +348,8 @@ class ContextLength(Scene):
             Flash(answer, color=GOLD, flash_radius=0.6, num_lines=10, line_length=0.2),
             run_time=0.5,
         )
-        self.wait(0.8)
+        # [2:21] Most of us already know the answer is Paris
+        self.wait(2.0)
 
         # ── "But what if we don't know?" — library illustration ──────────
         self.play(
@@ -348,7 +358,8 @@ class ContextLength(Scene):
             run_time=1.5,
         )
 
-        self.wait(1.0)
+        # [2:25] But what if we had no prior knowledge
+        self.wait(4.0)
         self.play(
             FadeOut(sentence_grp),
             run_time=1.5,
@@ -367,14 +378,16 @@ class ContextLength(Scene):
             run_time=1.8,
         )
 
-        self.wait(5.0)
+        # [2:35] Like being thrown into a library
+        self.wait(12.0)
 
         label = Text("learning from patterns ...").scale(0.5)
         label.set_color("#888888")
         label.to_edge(DOWN, buff=0.6)
         self.play(Write(label), run_time=0.8)
 
-        self.wait(1.5)
+        # [2:42] After reading enough text, you notice patterns
+        self.wait(4.0)
 
         # ── transition — sweep everything out ────────────────────────────
         self.play(
@@ -399,7 +412,8 @@ class ContextLength(Scene):
         formula.move_to(ORIGIN)
 
         self.play(Write(formula), run_time=1.2)
-        self.wait(0.4)
+        # [2:58] Language models can be formulated using P(w|h)
+        self.wait(5.0)
 
         # annotations
         w_ann = Text("next word", font_size=18, color=GOLD)
@@ -434,7 +448,8 @@ class ContextLength(Scene):
             GrowArrow(h_arrow),
             run_time=0.6,
         )
-        self.wait(0.8)
+        # [3:11] Probability of next word w, given context h
+        self.wait(5.0)
 
         # ── concrete example: P(w | "The capital of France is") ──────────
         example = MathTex(
@@ -457,7 +472,8 @@ class ContextLength(Scene):
             run_time=0.35,
         )
         self.play(Write(example), run_time=1.2)
-        self.wait(0.8)
+        # [3:16] The model produces a probability distribution
+        self.wait(4.0)
 
         # ================================================================
         #  PART 3 — PROBABILITY DISTRIBUTION BAR CHART
@@ -537,7 +553,8 @@ class ContextLength(Scene):
                 run_time=0.4,
             )
 
-        self.wait(0.4)
+        # [3:28] Paris receives the highest probability
+        self.wait(3.0)
 
         # highlight Paris bar
         paris_bar = bars[0]
@@ -551,7 +568,8 @@ class ContextLength(Scene):
             Flash(paris_bar, color=GOLD, flash_radius=0.5, num_lines=8),
             run_time=0.5,
         )
-        self.wait(0.8)
+        # [3:37] The model is not directly saying "I know geography"
+        self.wait(3.0)
 
         # ── "not geography, just statistics" ─────────────────────────────
         stat_note = Text(
@@ -561,7 +579,8 @@ class ContextLength(Scene):
         )
         stat_note.next_to(baseline, DOWN, buff=0.8)
         self.play(FadeIn(stat_note, shift=UP * 0.1), run_time=0.7)
-        self.wait(1.0)
+        # [3:41] Based on patterns, Paris is the most likely continuation
+        self.wait(4.0)
 
         self.play(
             *[FadeOut(m) for m in self.mobjects],
@@ -614,7 +633,8 @@ class ContextLength(Scene):
             run_time=0.9,
         )
         self.play(FadeIn(ambig_label, scale=1.2), run_time=0.5)
-        self.wait(1.0)
+        # [3:49] If the only context was "of France is" — ambiguous
+        self.wait(8.0)
 
         # ── transition to long context ───────────────────────────────────
         self.play(
@@ -654,7 +674,8 @@ class ContextLength(Scene):
             Flash(paris_answer, color=GOLD, flash_radius=0.5, num_lines=8),
             run_time=0.5,
         )
-        self.wait(1.0)
+        # [4:11] But if context is "The capital of France is" — clearer
+        self.wait(6.0)
 
         self.play(
             *[FadeOut(m) for m in self.mobjects],
@@ -689,10 +710,13 @@ class ContextLength(Scene):
         self.play(Write(eq_better), run_time=0.9)
         self.wait(0.4)
         self.play(Write(eq_cost), run_time=0.9)
-        self.wait(0.8)
+        # [4:24] But this creates a new problem — more context = more cost
+        self.wait(4.0)
 
         # ── visual: growing context bar vs growing cost bar ──────────────
         self.play(eqs.animate.to_edge(UP, buff=0.4).scale(0.85), run_time=0.5)
+        # [4:36] How the cost grows as context gets longer
+        self.wait(8.0)
 
         # context bar (blue, grows right)
         ctx_bar_bg = Rectangle(
@@ -757,7 +781,8 @@ class ContextLength(Scene):
             run_time=2.0,
             rate_func=smooth,
         )
-        self.wait(0.6)
+        # [4:47] This is where language modeling becomes a computational problem
+        self.wait(10.0)
 
         # ── the key question ─────────────────────────────────────────────
         question = Text(
@@ -785,7 +810,8 @@ class ContextLength(Scene):
             run_time=0.6,
         )
 
-        self.wait(1.5)
+        # [5:01] How much previous context should the model look at?
+        self.wait(8.0)
 
         # ── final fade ───────────────────────────────────────────────────
         self.play(

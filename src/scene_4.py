@@ -108,7 +108,8 @@ class RNNDeepDive(Scene):
         )
         self.play(GrowArrow(arrow_to_table), run_time=0.4)
         self.play(GrowArrow(pred_arrow), FadeIn(pred_q), run_time=0.4)
-        self.wait(0.5)
+        # [8:39] N-gram models give a simple way to use context: count patterns
+        self.wait(4.0)
 
         # Red ✗ — "does not scale"
         x1 = Line(
@@ -133,7 +134,8 @@ class RNNDeepDive(Scene):
             Flash(table.get_center(), color=RED, flash_radius=0.8, num_lines=10),
             run_time=0.5,
         )
-        self.wait(0.8)
+        # [8:51] But this approach does not scale
+        self.wait(6.0)
 
         self.play(*[FadeOut(m) for m in self.mobjects], run_time=0.6)
 
@@ -148,7 +150,8 @@ class RNNDeepDive(Scene):
         )
         q_text.move_to(UP * 3.0)
         self.play(Write(q_text), run_time=0.9)
-        self.wait(0.3)
+        # [8:55] Can the model compress everything into a smaller internal memory?
+        self.wait(3.0)
 
         # The processing box (the "model")
         model_box = RoundedRectangle(
@@ -197,7 +200,8 @@ class RNNDeepDive(Scene):
             )
             self.remove(w)
 
-        self.wait(0.3)
+        # [9:09] The key idea behind RNNs
+        self.wait(2.0)
 
         # Output prediction
         out_arrow = Arrow(
@@ -217,7 +221,8 @@ class RNNDeepDive(Scene):
             Flash(prediction, color=GOLD, flash_radius=0.5, num_lines=8),
             run_time=0.5,
         )
-        self.wait(0.8)
+        # [9:15] Hidden state — a learned vector updated with each token
+        self.wait(5.0)
 
         self.play(*[FadeOut(m) for m in self.mobjects], run_time=0.6)
 
@@ -234,7 +239,8 @@ class RNNDeepDive(Scene):
 
         self.play(Write(tok_title), run_time=0.5)
         self.play(FadeIn(full_word, shift=UP * 0.1), run_time=0.5)
-        self.wait(0.3)
+        # [9:27] Tokenization — representing words as tokens
+        self.wait(5.0)
 
         # Split into subword pieces
         pieces = ["un", "happi", "ness"]
@@ -279,7 +285,8 @@ class RNNDeepDive(Scene):
             ),
             run_time=0.7,
         )
-        self.wait(0.5)
+        # [9:44] Tokenization helps represent language using smaller building blocks
+        self.wait(8.0)
 
         # "but that's another story"
         aside = Text("...but that's another story.", font_size=18, color=DIM)
@@ -291,7 +298,8 @@ class RNNDeepDive(Scene):
 
         self.play(FadeIn(aside, shift=UP * 0.1), run_time=0.5)
         self.play(FadeIn(switch_label, shift=UP * 0.1), run_time=0.5)
-        self.wait(0.8)
+        # [9:57] But that is a story for another time
+        self.wait(8.0)
 
         self.play(*[FadeOut(m) for m in self.mobjects], run_time=0.6)
 
@@ -402,7 +410,8 @@ class RNNDeepDive(Scene):
 
             self.play(*anims, run_time=0.45)
 
-        self.wait(0.3)
+        # [10:03] RNNs as standard neural networks with the dimension of time
+        self.wait(3.0)
 
         # Animate a pulse traveling through the hidden state chain
         pulse = Dot(radius=0.08, color=GOLD, fill_opacity=0.9)
@@ -421,7 +430,8 @@ class RNNDeepDive(Scene):
             FadeOut(pulse),
             run_time=0.5,
         )
-        self.wait(0.8)
+        # [10:10] As each token is read, the model updates its memory
+        self.wait(10.0)
 
         self.play(*[FadeOut(m) for m in self.mobjects], run_time=0.6)
 
@@ -530,7 +540,8 @@ class RNNDeepDive(Scene):
             ),
             run_time=0.5,
         )
-        self.wait(1.0)
+        # [10:20] This makes RNNs feel a little more human
+        self.wait(18.0)
 
         self.play(*[FadeOut(m) for m in self.mobjects], run_time=0.6)
 
@@ -593,7 +604,8 @@ class RNNDeepDive(Scene):
             LaggedStart(*[GrowArrow(a) for a in f_h_arrows], lag_ratio=0.05),
             run_time=0.8,
         )
-        self.wait(0.3)
+        # [10:44] But there is a catch — these models can forget
+        self.wait(3.0)
 
         # Highlight first token in GOLD, then watch it fade through cells
         glow = f_cells[0].copy().set_stroke(GOLD, width=3).set_fill(GOLD, opacity=0.3)
@@ -611,7 +623,8 @@ class RNNDeepDive(Scene):
         for i, fg in enumerate(fade_glows):
             self.play(FadeIn(fg), run_time=0.25)
 
-        self.wait(0.3)
+        # [10:56] Earlier information has to survive through many updates
+        self.wait(5.0)
 
         # "information fades" label
         info_fade = Text("early information fades away", font_size=18, color=RED)
@@ -632,7 +645,8 @@ class RNNDeepDive(Scene):
             GrowArrow(decay_arrow),
             run_time=0.6,
         )
-        self.wait(1.0)
+        # [11:05] Important details from the beginning slowly fade away
+        self.wait(15.0)
 
         self.play(*[FadeOut(m) for m in self.mobjects + [glow] + fade_glows], run_time=0.6)
 
@@ -682,7 +696,8 @@ class RNNDeepDive(Scene):
             FadeIn(large_label),
             run_time=0.6,
         )
-        self.wait(0.3)
+        # [11:12] By changing the size of the hidden state
+        self.wait(5.0)
 
         # "But still fixed" brace
         brace_s = Brace(small_bar, LEFT, color=DIM)
@@ -698,7 +713,8 @@ class RNNDeepDive(Scene):
             GrowFromCenter(brace_l), FadeIn(fixed_l),
             run_time=0.6,
         )
-        self.wait(0.5)
+        # [11:25] A larger hidden state gives more space
+        self.wait(5.0)
 
         # Key point
         key_point = Text(
@@ -708,7 +724,8 @@ class RNNDeepDive(Scene):
         )
         key_point.to_edge(DOWN, buff=0.8)
         self.play(FadeIn(key_point, shift=UP * 0.1), run_time=0.6)
-        self.wait(1.0)
+        # [11:29] But this memory is still fixed in size
+        self.wait(10.0)
 
         self.play(*[FadeOut(m) for m in self.mobjects], run_time=0.6)
 
@@ -758,7 +775,8 @@ class RNNDeepDive(Scene):
             run_time=0.5,
         )
         self.play(GrowArrow(s_pred), FadeIn(check, scale=1.2), run_time=0.4)
-        self.wait(0.3)
+        # [11:42] For short sequences, this works fairly well
+        self.wait(4.0)
 
         # --- Long sequence (struggles) ---
         long_title = Text("long sequence", font_size=18, color=RED)
@@ -804,7 +822,7 @@ class RNNDeepDive(Scene):
             run_time=0.5,
         )
         self.play(GrowArrow(l_pred), FadeIn(q_mark, scale=1.2), run_time=0.4)
-        self.wait(0.3)
+        self.wait(4.0)
 
         # Labels below
         short_ok = Text("hidden state retains info", font_size=14, color=GREEN)
@@ -813,7 +831,8 @@ class RNNDeepDive(Scene):
         long_bad.next_to(l_cells, DOWN, buff=0.5)
 
         self.play(FadeIn(short_ok), FadeIn(long_bad), run_time=0.5)
-        self.wait(1.0)
+        # [11:53] But as the sequence grows longer, the model struggles
+        self.wait(8.0)
 
         self.play(*[FadeOut(m) for m in self.mobjects], run_time=0.6)
 
@@ -876,7 +895,8 @@ class RNNDeepDive(Scene):
             run_time=0.7,
         )
         self.play(GrowArrow(c_line), FadeIn(c_label), run_time=0.4)
-        self.wait(0.5)
+        # [12:08] LSTMs use gates to decide what to remember/forget
+        self.wait(5.0)
 
         # Animate gates "opening and closing"
         for gate in gates:
@@ -889,7 +909,7 @@ class RNNDeepDive(Scene):
                 run_time=0.2,
             )
 
-        self.wait(0.3)
+        self.wait(3.0)
 
         # Shrink and show chain — still sequential
         detail_grp = VGroup(lstm_box, gates, gate_labels, c_line, c_label)
@@ -949,7 +969,8 @@ class RNNDeepDive(Scene):
             run_time=0.5,
         )
         self.play(FadeIn(chain_label, scale=1.1), run_time=0.4)
-        self.wait(0.3)
+        # [12:30] The fundamental limitation remains: context flows step by step
+        self.wait(5.0)
 
         # Long brace under chain
         chain_brace = Brace(
@@ -964,7 +985,8 @@ class RNNDeepDive(Scene):
             FadeIn(brace_label),
             run_time=0.5,
         )
-        self.wait(1.0)
+        # [12:39] Information from first token must travel through the chain
+        self.wait(10.0)
 
         self.play(*[FadeOut(m) for m in self.mobjects], run_time=0.6)
 
@@ -1049,7 +1071,8 @@ class RNNDeepDive(Scene):
             FadeOut(signal),
             run_time=0.5,
         )
-        self.wait(1.0)
+        # [12:50] Even with better memory, still forced to carry context
+        self.wait(5.0)
 
         self.play(*[FadeOut(m) for m in self.mobjects], run_time=0.6)
 
@@ -1058,7 +1081,7 @@ class RNNDeepDive(Scene):
         # ================================================================
 
         # Dramatic black pause
-        self.wait(0.5)
+        self.wait(0.3)
 
         # First question
         q1 = Text(
@@ -1069,7 +1092,8 @@ class RNNDeepDive(Scene):
         q1.move_to(UP * 1.0)
 
         self.play(Write(q1), run_time=1.2)
-        self.wait(0.8)
+        # [12:57] What if the model didn't have to carry memory step by step?
+        self.wait(0.5)
 
         # Second question
         q2 = Text(
@@ -1080,7 +1104,8 @@ class RNNDeepDive(Scene):
         q2.move_to(DOWN * 0.3)
 
         self.play(Write(q2), run_time=1.2)
-        self.wait(0.5)
+        # [13:05] What if every token could look directly at every other token?
+        self.wait(0.3)
 
         # Move questions up
         self.play(
@@ -1175,7 +1200,7 @@ class RNNDeepDive(Scene):
         direct_label.next_to(VGroup(nodes, edges), DOWN, buff=0.4)
         self.play(FadeIn(direct_label, shift=UP * 0.1), run_time=0.4)
 
-        self.wait(1.0)
+        self.wait(0.5)
 
         self.play(*[FadeOut(m) for m in self.mobjects], run_time=0.6)
 
@@ -1254,7 +1279,8 @@ class RNNDeepDive(Scene):
             run_time=0.5,
         )
 
-        self.wait(2.0)
+        # [13:11] That idea brings us to Transformers
+        self.wait(1.0)
 
         # Final fade
         self.play(*[FadeOut(m) for m in self.mobjects], run_time=1.0)

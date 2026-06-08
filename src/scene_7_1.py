@@ -193,7 +193,8 @@ class MultimodalModels(Scene):
             Create(img_border),
             run_time=0.8,
         )
-        self.wait(0.5)
+        # [17:10] Can we go beyond text? What if models could see images?
+        self.wait(2.0)
 
         # --- 1b. Overlay a grid to show patch decomposition ---
         n_rows, n_cols = 4, 4
@@ -231,7 +232,8 @@ class MultimodalModels(Scene):
             LaggedStart(*[Create(l) for l in grid_lines], lag_ratio=0.04),
             run_time=0.7,
         )
-        self.wait(0.3)
+        # [17:14] Image is broken into patches
+        self.wait(1.0)
 
         # --- 1c. Create patch tokens from the grid cells ---
         patch_squares = VGroup()
@@ -251,7 +253,8 @@ class MultimodalModels(Scene):
             ),
             run_time=0.6,
         )
-        self.wait(0.2)
+        # [17:19] Each patch becomes a visual token
+        self.wait(1.0)
 
         # Fade out the dog image, keep the patches
         self.play(
@@ -288,14 +291,15 @@ class MultimodalModels(Scene):
             LaggedStart(*[FadeIn(l) for l in token_labels], lag_ratio=0.05),
             run_time=0.4,
         )
-        self.wait(0.3)
+        self.wait(1.0)
 
         # --- 1e. Robot appears center ---
         robot = make_robot(scale_factor=1.0)
         robot.move_to(RIGHT * 0.3)
 
         self.play(FadeIn(robot, scale=0.85), run_time=0.6)
-        self.wait(0.2)
+        # [17:28] The model takes visual tokens
+        self.wait(1.0)
 
         # --- 1f. Tokens flow into the robot ---
         # Animate tokens moving into the robot's center
@@ -354,7 +358,8 @@ class MultimodalModels(Scene):
             ),
             run_time=1.2,
         )
-        self.wait(0.6)
+        # [17:37] And maps them to text concepts like "dog", "animal", "fur"
+        self.wait(2.0)
 
         # --- 1h. Prompt and response ---
         prompt = Text('"What animal is this?"', font_size=18, color=DIM)
@@ -410,7 +415,8 @@ class MultimodalModels(Scene):
             ),
             run_time=0.7,
         )
-        self.wait(1.0)
+        # [17:43] It can answer questions about images
+        self.wait(3.0)
 
         # --- Transition out Part 1 ---
         self.play(*[FadeOut(m) for m in self.mobjects], run_time=0.8)
@@ -427,7 +433,8 @@ class MultimodalModels(Scene):
         insight.move_to(ORIGIN)
 
         self.play(Write(insight), run_time=0.9)
-        self.wait(0.8)
+        # [17:48] The key insight: different data, same reasoning
+        self.wait(2.0)
         self.play(
             insight.animate.scale(0.5).to_edge(UP, buff=0.4).set_color(DIM),
             run_time=0.6,
@@ -451,7 +458,8 @@ class MultimodalModels(Scene):
             FadeIn(env_label),
             run_time=0.7,
         )
-        self.wait(0.4)
+        # [17:52] The environment becomes another input modality
+        self.wait(1.0)
 
         # --- 2b. Robot appears on the right ---
         robot2 = make_robot(scale_factor=1.0)
@@ -656,7 +664,8 @@ class MultimodalModels(Scene):
             FadeIn(merge_label, shift=UP * 0.08),
             run_time=0.7,
         )
-        self.wait(0.8)
+        # [17:54] All modalities merge into a unified token stream
+        self.wait(2.0)
 
         # --- 2f. Zoom back out ---
         inside_elements = VGroup(
@@ -680,7 +689,7 @@ class MultimodalModels(Scene):
             run_time=0.8,
             rate_func=smooth,
         )
-        self.wait(0.3)
+        self.wait(1.0)
 
         # --- 2g. User prompt ---
         user_prompt = Text('"What should I do now?"', font_size=18, color=DIM)
@@ -805,7 +814,7 @@ class MultimodalModels(Scene):
             FadeIn(bubble, scale=0.9),
             run_time=0.5,
         )
-        self.wait(0.8)
+        self.wait(2.0)
 
         # --- Final emphasis ---
         # Glow on both outputs
@@ -840,7 +849,8 @@ class MultimodalModels(Scene):
             Flash(bubble.get_center(), color=GOLD, flash_radius=0.4, num_lines=6),
             run_time=0.5,
         )
-        self.wait(1.5)
+        # [18:00] The model produces both language and actions
+        self.wait(3.0)
 
         # --- Final fade ---
         self.play(*[FadeOut(m) for m in self.mobjects], run_time=1.0)

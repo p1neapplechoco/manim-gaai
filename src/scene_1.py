@@ -86,6 +86,7 @@ class IntroductionGAA(Scene):
         computer.set_color(WHITE)
         computer.to_edge(RIGHT)
 
+        # [0:00] Opening — AI helping with many different problems
         self.play(
             DrawBorderThenFill(robot),
             DrawBorderThenFill(crowd),
@@ -98,6 +99,8 @@ class IntroductionGAA(Scene):
             ("Explain gravity.", "Gravity is ..."),
             ("Design a system to ...", "Sure, let's start \nby ..."),
         ]
+
+        self.wait(2)
 
         for question, answer in question_answer_pairs:
             question_bubble = self.text_bubble(question, color=BLUE)
@@ -122,7 +125,7 @@ class IntroductionGAA(Scene):
             self.play(
                 FadeIn(question_bubble),
                 GrowArrow(ask_arrow),
-                run_time=2,
+                run_time=1,
             )
 
             self.play(
@@ -131,15 +134,15 @@ class IntroductionGAA(Scene):
                     line_length=0.5,
                     num_lines=20,
                 ),
+                run_time=1.0,
             )
 
             self.play(
                 FadeIn(answer_bubble),
                 GrowArrow(answer_arrow),
-                run_time=2,
+                run_time=1,
             )
 
-            self.wait(1)
             self.play(
                 FadeOut(question_bubble),
                 FadeOut(answer_bubble),
@@ -148,7 +151,8 @@ class IntroductionGAA(Scene):
                 run_time=1,
             )
 
-        # But recently, ...
+        # [0:14] But recently, moving toward something more ambitious
+        self.wait(5)
         crowd_bubble = self.text_bubble("Goal", color=YELLOW)
         crowd_bubble.next_to(crowd, DOWN)
         self.play(
@@ -199,14 +203,15 @@ class IntroductionGAA(Scene):
             run_time=1.0,
         )
 
-        self.wait(1)
+        # [0:25] observe an environment, understand a goal
+        self.wait(2)
 
         self.play(
             FadeIn(label_observation),
             GrowArrow(environment_to_robot),
             run_time=1.0,
         )
-        self.wait(2)
+        self.wait(3)
 
         language_bubble = self.text_bubble("Language", color=PURPLE)
         action_bubble = self.text_bubble("Action", color=RED)
@@ -244,12 +249,16 @@ class IntroductionGAA(Scene):
             FadeIn(action_bubble),
             run_time=1.5,
         )
-        self.wait(2)
+        # [0:33] imagine an AI that can look at your screen
+        self.wait(8)
 
         self.play(
             FadeOut(*self.mobjects),
             run_time=2,
         )
+
+        # [0:48] This kind of system is called GAA
+        self.wait(1.0)
 
         # transition to the title
 
@@ -280,7 +289,8 @@ class IntroductionGAA(Scene):
             flash = Circumscribe(lm)
             self.play(flash, run_time=1.0)
 
-        self.wait(1.0)
+        # [0:54] The word "generalist" means multi-purpose
+        self.wait(3.0)
         self._gaa_group = VGroup(letter_mobs, word_mobs)
         letter_mobs, word_mobs = self._gaa_group
 
@@ -321,7 +331,8 @@ class IntroductionGAA(Scene):
 
         self.play(Write(generatlist_bubble), Write(agent_bubble), run_time=1.5)
         self.play(Create(gen_line), Create(agt_line), run_time=1.5)
-        self.wait(5.0)
+        # [1:03] The word "agent" means it can take actions
+        self.wait(6.0)
 
         self.play(
             FadeOut(
@@ -336,7 +347,10 @@ class IntroductionGAA(Scene):
             run_time=0.8,
         )
 
-        # "How did we get here?"
+        # [1:11] So instead of "What should the answer be?" ...
+        self.wait(1.0)
+
+        # [1:18] How did we get here?
         hook_text = Text("How did we get here?", font_size=36, color=WHITE)
         question_mark = hook_text[-1]
 
@@ -392,7 +406,8 @@ class IntroductionGAA(Scene):
         clock = VGroup(face, ticks, minute_hand, hour_hand, center_dot)
 
         self.play(FadeIn(clock, scale=0.7), run_time=0.8)
-        self.wait(0.5)
+        # [1:20] How did we go from language models to generalist agents
+        self.wait(3.0)
         self.play(
             Rotating(
                 minute_hand,

@@ -74,7 +74,8 @@ class AttentionMechanism(Scene):
             FadeIn(era_label, shift=UP * 0.1),
             run_time=0.8,
         )
-        self.wait(1.0)
+        # [13:16] This brings us to the present day — attention-based architectures
+        self.wait(8.0)
 
         self.play(*[FadeOut(m) for m in self.mobjects], run_time=0.6)
 
@@ -103,7 +104,8 @@ class AttentionMechanism(Scene):
             ),
             run_time=1.0,
         )
-        self.wait(0.5)
+        # [13:25] The core idea is the attention mechanism
+        self.wait(4.0)
 
         # Highlight "it" — the ambiguous token
         it_word = word_mobs[7]  # "it"
@@ -114,7 +116,8 @@ class AttentionMechanism(Scene):
         )
 
         self.play(Create(it_highlight), run_time=0.4)
-        self.wait(0.3)
+        # [13:38] To understand "it," the model needs to know what it refers to
+        self.wait(3.0)
 
         # ================================================================
         #  PART 3 — AMBIGUITY: what does "it" refer to?
@@ -165,7 +168,8 @@ class AttentionMechanism(Scene):
             FadeIn(animal_opt), FadeIn(street_opt),
             run_time=0.7,
         )
-        self.wait(1.0)
+        # [13:45] Is it "animal" or is it "street"?
+        self.wait(8.0)
 
         self.play(*[FadeOut(m) for m in self.mobjects], run_time=0.6)
 
@@ -220,7 +224,8 @@ class AttentionMechanism(Scene):
             LaggedStart(*[GrowArrow(a) for a in chain_arrows], lag_ratio=0.03),
             run_time=0.7,
         )
-        self.wait(0.3)
+        # [13:54] In older models, information travels step by step
+        self.wait(3.0)
 
         # Show signal fading from "animal" to "it"
         # Draw dotted path highlighting the 6 hops
@@ -242,7 +247,8 @@ class AttentionMechanism(Scene):
         fade_label.next_to(chain_cells, DOWN, buff=0.6)
 
         self.play(FadeIn(fade_label, shift=UP * 0.08), run_time=0.4)
-        self.wait(0.8)
+        # [14:03] If the relevant word appeared much earlier, connection becomes weak
+        self.wait(8.0)
 
         self.play(*[FadeOut(m) for m in self.mobjects], run_time=0.6)
 
@@ -286,7 +292,8 @@ class AttentionMechanism(Scene):
             ),
             run_time=0.7,
         )
-        self.wait(0.3)
+        # [14:14] Transformers handle this differently — with attention
+        self.wait(3.0)
 
         # Direct attention line from "it" to "animal" — thick, bright
         attn_line_main = Line(
@@ -320,7 +327,8 @@ class AttentionMechanism(Scene):
             LaggedStart(*[Create(l) for l in attn_lines_dim], lag_ratio=0.03),
             run_time=0.5,
         )
-        self.wait(0.3)
+        # [14:23] "it" can directly look back and assign more weight to "animal"
+        self.wait(3.0)
 
         # Attention weight labels
         weight_main = Text("0.72", font_size=14, color=GOLD)
@@ -333,7 +341,8 @@ class AttentionMechanism(Scene):
         direct_label.next_to(attn_dots, DOWN, buff=0.8)
 
         self.play(FadeIn(direct_label, shift=UP * 0.1), run_time=0.5)
-        self.wait(1.0)
+        # [14:31] Instead of relying on compressed memory, Transformer builds direct connections
+        self.wait(10.0)
 
         self.play(*[FadeOut(m) for m in self.mobjects], run_time=0.6)
 
@@ -390,7 +399,8 @@ class AttentionMechanism(Scene):
 
         self.play(FadeIn(power_label, shift=UP * 0.1), run_time=0.5)
         self.play(FadeIn(mainstream, shift=UP * 0.08), run_time=0.5)
-        self.wait(1.0)
+        # [14:41] This is why most mainstream models use attention
+        self.wait(8.0)
 
         self.play(*[FadeOut(m) for m in self.mobjects], run_time=0.6)
 
@@ -402,7 +412,8 @@ class AttentionMechanism(Scene):
         but_text.move_to(ORIGIN)
 
         self.play(Write(but_text), run_time=0.9)
-        self.wait(0.8)
+        # [14:47] But attention is not magic
+        self.wait(2.0)
 
         self.play(
             but_text.animate.scale(0.6).to_edge(UP, buff=0.4).set_color(DIM),
@@ -437,7 +448,7 @@ class AttentionMechanism(Scene):
             candies.add(candy)
 
         self.play(FadeIn(bag), FadeIn(candies), FadeIn(bag_label), run_time=0.5)
-        self.wait(0.3)
+        self.wait(1.0)
 
         # Few people (short context) — each gets plenty
         few_people = VGroup()
@@ -471,7 +482,8 @@ class AttentionMechanism(Scene):
         enough = Text("plenty for everyone", font_size=14, color=GREEN)
         enough.next_to(few_people, RIGHT, buff=0.5)
         self.play(FadeIn(enough), run_time=0.3)
-        self.wait(0.8)
+        # [14:56] Attention dilution — too many people for the candies
+        self.wait(2.0)
 
         # Transition to many people
         self.play(
@@ -517,7 +529,7 @@ class AttentionMechanism(Scene):
         diluted = Text("attention diluted", font_size=14, color=RED)
         diluted.next_to(many_people, RIGHT, buff=0.4)
         self.play(FadeIn(diluted, scale=1.1), run_time=0.3)
-        self.wait(0.5)
+        self.wait(1.0)
 
         # Highlight the one important person buried in the crowd
         important = many_people[6]
@@ -526,7 +538,8 @@ class AttentionMechanism(Scene):
         imp_label.next_to(important, RIGHT, buff=0.15)
 
         self.play(FadeIn(imp_glow), FadeIn(imp_label), run_time=0.4)
-        self.wait(1.0)
+        # [15:12] Important information becomes harder to find
+        self.wait(2.0)
 
         self.play(*[FadeOut(m) for m in self.mobjects], run_time=0.6)
 
@@ -602,7 +615,8 @@ class AttentionMechanism(Scene):
             FadeIn(long_label),
             run_time=0.6,
         )
-        self.wait(1.0)
+        # [15:15] Short context: focused attention. Long context: diluted attention
+        self.wait(8.0)
 
         self.play(*[FadeOut(m) for m in self.mobjects], run_time=0.6)
 
@@ -673,7 +687,8 @@ class AttentionMechanism(Scene):
         for row in row_mobs:
             self.play(FadeIn(row, shift=RIGHT * 0.1), run_time=0.35)
 
-        self.wait(0.5)
+        # [15:28] Model performance across context lengths
+        self.wait(2.0)
 
         # Highlight the worst drop-offs
         worst_box = SurroundingRectangle(
@@ -689,7 +704,8 @@ class AttentionMechanism(Scene):
         )
         drop_note.to_edge(DOWN, buff=0.6)
         self.play(FadeIn(drop_note, shift=UP * 0.1), run_time=0.5)
-        self.wait(1.2)
+        # [15:50] Larger context ≠ better performance
+        self.wait(3.0)
 
         self.play(*[FadeOut(m) for m in self.mobjects], run_time=0.6)
 
@@ -764,7 +780,7 @@ class AttentionMechanism(Scene):
             run_time=0.5,
         )
         self.play(Write(n2_formula), run_time=0.5)
-        self.wait(0.3)
+        self.wait(1.0)
 
         # ── RIGHT: Retrieval quality ──
         ret_label = Text("retrieval quality", font_size=18, color=GOLD)
@@ -812,7 +828,7 @@ class AttentionMechanism(Scene):
             run_time=0.4,
         )
         self.play(FadeIn(q_text, shift=UP * 0.08), run_time=0.4)
-        self.wait(1.2)
+        self.wait(3.0)
 
         # Final summary box
         summary = Text(
@@ -833,7 +849,8 @@ class AttentionMechanism(Scene):
             Flash(sum_box, color=SEPIA, flash_radius=0.4, line_length=0.12, num_lines=8),
             run_time=0.5,
         )
-        self.wait(1.5)
+        # Stronger context but not unlimited — two challenges: n² cost + retrieval quality
+        self.wait(3.0)
 
         # Final fade
         self.play(*[FadeOut(m) for m in self.mobjects], run_time=1.0)

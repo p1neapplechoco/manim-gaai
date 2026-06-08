@@ -329,9 +329,11 @@ class ScalingLaws(Scene):
         transformer_group = VGroup(transformer, transformer_label)
 
         self.play(FadeIn(web[1]), LaggedStart(*[Create(e) for e in web[0]], lag_ratio=0.01), run_time=1.0)
-        self.wait(0.25)
+        # [16:06] But what happens when we make these Transformers bigger?
+        self.wait(2.0)
         self.play(ReplacementTransform(web, transformer_group), run_time=0.8)
-        self.wait(0.35)
+        # [16:10] Transformers are the foundation — now scale them up
+        self.wait(2.0)
 
         small = transformer.copy().scale(0.48).move_to(LEFT * 2.7 + DOWN * 0.15)
         medium = transformer.copy().scale(0.72).move_to(ORIGIN + DOWN * 0.05)
@@ -356,7 +358,8 @@ class ScalingLaws(Scene):
             Flash(large.get_center(), color=WHITE, flash_radius=0.8, line_length=0.16, num_lines=10),
             run_time=0.45,
         )
-        self.wait(0.35)
+        # [16:16] Researchers discovered: bigger models don't just get better slowly
+        self.wait(3.0)
 
         self.play(
             FadeOut(scale_stack),
@@ -406,7 +409,8 @@ class ScalingLaws(Scene):
             LaggedStart(*[Create(glow) for glow in factor_glows], lag_ratio=0.12),
             run_time=0.8,
         )
-        self.wait(0.35)
+        # [16:24] Three independent factors: model size, data, compute
+        self.wait(5.0)
 
         # Compact mathematical statement, revealed after the pictures.
         equation_block = make_equation_block().scale(0.92)
@@ -420,7 +424,8 @@ class ScalingLaws(Scene):
         for row in equation_block[1]:
             self.play(Write(row[0]), FadeIn(row[1], shift=UP * 0.04), run_time=0.65)
         self.play(GrowFromCenter(equation_block[0]), FadeIn(equation_block[2]), run_time=0.45)
-        self.wait(0.6)
+        # [16:38] Each one follows a power-law relationship
+        self.wait(4.0)
 
         # Turn the equations into the main intuition: more scale, lower loss.
         compact_factors = VGroup()
@@ -463,7 +468,8 @@ class ScalingLaws(Scene):
             Flash(graph[5].point_from_proportion(0.76), color=GOLD, flash_radius=0.45, line_length=0.12, num_lines=8),
             run_time=0.5,
         )
-        self.wait(1.2)
+        # [16:55] More scale, lower loss — a smooth, predictable curve
+        self.wait(3.0)
 
         self.play(
             FadeOut(compact_factors),

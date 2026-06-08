@@ -56,7 +56,8 @@ class NgramToRNN(Scene):
             run_time=1.0,
         )
         self.play(FadeIn(blank_grp, scale=0.9), run_time=0.4)
-        self.wait(0.3)
+        # [5:18] The earliest LMs looked at a fixed number of previous words
+        self.wait(3.0)
 
         # Sliding window — highlights n-1 previous words
         def make_window(si, ei):
@@ -81,7 +82,8 @@ class NgramToRNN(Scene):
             FadeIn(br_label),
             run_time=0.7,
         )
-        self.wait(0.5)
+        # [5:31] n represents the number of words, context is n-1 words
+        self.wait(3.0)
 
         # Slide the window across the sentence
         for si in [2, 0]:
@@ -96,7 +98,7 @@ class NgramToRNN(Scene):
                 Transform(br_label, nl),
                 run_time=0.6,
             )
-            self.wait(0.3)
+            self.wait(1.5)
 
         # Small tally marks — visual for "counting"
         tally = VGroup()
@@ -120,9 +122,11 @@ class NgramToRNN(Scene):
             FadeIn(ct_label),
             run_time=0.6,
         )
-        self.wait(0.8)
+        # [5:40] n usually ranges from 1 to 6
+        self.wait(4.0)
 
         self.play(*[FadeOut(m) for m in self.mobjects], run_time=0.6)
+        self.wait(2.0)
 
         # ================================================================
         #  PART 2 — N-GRAM NAMING
@@ -162,7 +166,8 @@ class NgramToRNN(Scene):
 
         for row in rows:
             self.play(FadeIn(row, shift=RIGHT * 0.15), run_time=0.5)
-            self.wait(0.15)
+            # [5:48] unigram for n=1, bigram for n=2
+            self.wait(2.0)
 
         # General n-gram row
         vdots = MathTex(r"\vdots", font_size=28, color=DIM)
@@ -191,7 +196,8 @@ class NgramToRNN(Scene):
 
         self.play(FadeIn(vdots), run_time=0.3)
         self.play(FadeIn(gen_row, shift=RIGHT * 0.15), run_time=0.5)
-        self.wait(0.8)
+        # [5:54] The main problem is that n-gram models do not scale well
+        self.wait(4.0)
 
         self.play(*[FadeOut(m) for m in self.mobjects], run_time=0.6)
 
@@ -214,7 +220,8 @@ class NgramToRNN(Scene):
         formula.next_to(v_label, DOWN, buff=0.35)
 
         self.play(Write(formula), run_time=1.0)
-        self.wait(0.5)
+        # [5:59] Every time we increase n, the model has to store more
+        self.wait(6.0)
 
         self.play(
             VGroup(v_label, formula).animate.scale(0.8).to_edge(UP, buff=0.2),
@@ -300,10 +307,12 @@ class NgramToRNN(Scene):
                     run_time=0.6,
                 )
 
-            self.wait(0.3)
+            # [6:17] If vocabulary has V words, combinations = V^n
+            self.wait(5.0)
             all_bar_mobs.add(bar, nm, st, nt)
 
-        self.wait(0.8)
+        # [6:37] V x V x ... x V = V^n — proven using combinatorics
+        self.wait(8.0)
         self.play(*[FadeOut(m) for m in self.mobjects], run_time=0.6)
 
         # ================================================================
@@ -363,7 +372,8 @@ class NgramToRNN(Scene):
             ),
             run_time=0.5,
         )
-        self.wait(0.3)
+        # [7:17] Two major problems: storage
+        self.wait(4.0)
 
         # ── Sparsity icon (right) ────────────────────────────────────────
         g_n = 6
@@ -406,7 +416,8 @@ class NgramToRNN(Scene):
             FadeIn(sp_title),
             run_time=0.7,
         )
-        self.wait(1.0)
+        # [7:26] And data sparsity — never-seen phrases
+        self.wait(10.0)
 
         self.play(*[FadeOut(m) for m in self.mobjects], run_time=0.6)
 
@@ -466,7 +477,8 @@ class NgramToRNN(Scene):
             FadeIn(ct2),
             run_time=0.4,
         )
-        self.wait(0.3)
+        # [7:52] Count how often patterns appear
+        self.wait(3.0)
 
         # Arrow pointing to the bigger bar
         pick_arrow = Arrow(
@@ -481,7 +493,7 @@ class NgramToRNN(Scene):
         pick_lab.next_to(pick_arrow, DOWN, buff=0.12)
 
         self.play(GrowArrow(pick_arrow), FadeIn(pick_lab), run_time=0.5)
-        self.wait(0.3)
+        self.wait(2.0)
 
         # "brute-force" bracket
         all_counts = VGroup(ph1, b1, ct1, ph2, b2, ct2)
@@ -494,7 +506,8 @@ class NgramToRNN(Scene):
             Write(bf_lab),
             run_time=0.6,
         )
-        self.wait(0.8)
+        # [7:59] Simple, intuitive, almost brute-force
+        self.wait(4.0)
 
         self.play(*[FadeOut(m) for m in self.mobjects], run_time=0.6)
 
@@ -548,7 +561,8 @@ class NgramToRNN(Scene):
         )
         self.play(Write(tbl_label), run_time=0.5)
         self.play(FadeIn(observer, scale=0.5), run_time=0.3)
-        self.wait(0.4)
+        # [8:12] Instead of storing every combination in a giant table
+        self.wait(3.0)
 
         # Red ✗
         x1 = Line(
@@ -569,7 +583,7 @@ class NgramToRNN(Scene):
             Flash(ORIGIN, color=RED, flash_radius=1.2, num_lines=14),
             run_time=0.5,
         )
-        self.wait(0.5)
+        self.wait(3.0)
 
         self.play(*[FadeOut(m) for m in self.mobjects], run_time=0.6)
 
@@ -581,7 +595,8 @@ class NgramToRNN(Scene):
         q_text = Text("What if we compress?", font_size=28, color=WHITE)
         q_text.move_to(UP * 3.0)
         self.play(Write(q_text), run_time=0.7)
-        self.wait(0.3)
+        # [8:21] Can the model compress the context into a learned representation?
+        self.wait(2.0)
 
         # The processing box (the "model")
         model_box = RoundedRectangle(
@@ -628,7 +643,7 @@ class NgramToRNN(Scene):
             )
             self.remove(w)
 
-        self.wait(0.3)
+        self.wait(3.0)
 
         # Label the box
         comp_label = Text("compressed", font_size=14, color=ACCENT)
@@ -653,7 +668,8 @@ class NgramToRNN(Scene):
             Flash(prediction, color=GOLD, flash_radius=0.5, num_lines=8),
             run_time=0.5,
         )
-        self.wait(0.8)
+        # [8:30] Model reads words one by one, compresses into representation
+        self.wait(4.0)
 
         # ── Transition to Part 8 (keep model_box + state) ────────────────
         self.play(
@@ -690,7 +706,8 @@ class NgramToRNN(Scene):
             FadeIn(h_label),
             run_time=0.8,
         )
-        self.wait(0.3)
+        # [8:36] This brings us to RNNs
+        self.wait(3.0)
 
         # Input arrow
         in_arrow = Arrow(
@@ -744,7 +761,7 @@ class NgramToRNN(Scene):
             ),
             run_time=0.5,
         )
-        self.wait(0.3)
+        self.wait(3.0)
 
         # Title
         title = Text("Recurrent Neural Networks", font_size=30, color=ACCENT)
@@ -773,7 +790,7 @@ class NgramToRNN(Scene):
             run_time=0.6,
         )
 
-        self.wait(1.5)
+        self.wait(8.0)
 
         # Final fade
         self.play(*[FadeOut(m) for m in self.mobjects], run_time=1.0)
