@@ -8,6 +8,8 @@ if "manimgl" in CMD:
 else:
     from manim import *
 
+from utils.tex_text import Text
+
 BASE_DIR = Path("/home/pineapple/Desktop/projects/manim-gaai/")
 
 WHITE = "#F5F5F5"
@@ -417,7 +419,7 @@ class MultimodalModels(Scene):
         token_labels = VGroup()
         for i, sq in enumerate(token_row):
             if i < 4 or i == len(token_row) - 1:
-                lbl_text = f"v{i+1}" if i < 4 else f"v{len(token_row)}"
+                lbl_text = f"v_{{{i+1}}}" if i < 4 else f"v_{{{len(token_row)}}}"
                 lbl = MathTex(lbl_text, font_size=12, color=DIM)
                 lbl.next_to(sq, DOWN, buff=0.06)
                 token_labels.add(lbl)

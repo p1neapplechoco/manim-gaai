@@ -8,6 +8,8 @@ if "manimgl" in CMD:
 else:
     from manim import *
 
+from utils.tex_text import Text
+
 BASE_DIR = Path("/home/pineapple/Desktop/projects/manim-gaai/")
 
 WHITE = "#F5F5F5"
@@ -27,9 +29,9 @@ PINK = "#F48FB1"
 # ── helpers ─────────────────────────────────────────────────────────
 
 
-def make_pill(text_str, color=ACCENT, font_size=16, fill_opacity=0.15):
+def make_pill(text_str, color=ACCENT, font_size=16, fill_opacity=0.15, tex_escape=True):
     """A rounded pill-shaped label."""
-    label = Text(text_str, font_size=font_size, color=WHITE)
+    label = Text(text_str, font_size=font_size, color=WHITE, tex_escape=tex_escape)
     pill = RoundedRectangle(
         width=label.width + 0.4,
         height=label.height + 0.22,
@@ -95,7 +97,7 @@ def make_neural_network_small(center, width=2.0, height=1.5, color=ACCENT):
                     p1,
                     p2,
                     color=color,
-                    stroke_width=0.4,
+                    stroke_width=2.0,
                     stroke_opacity=0.25,
                 )
                 net.add(edge)
@@ -437,10 +439,10 @@ class FromChatbotsToAgents(Scene):
 
         # Show different "next" outputs cycling on the right side
         output_configs = [
-            ("next token", ACCENT, '"The"'),
-            ("next word about image", TEAL, '"fluffy"'),
-            ("next sound description", PURPLE, '"bark"'),
-            ("next video frame", ORANGE, "▶ frame 42"),
+            ("next token", ACCENT, '"The"', True),
+            ("next word about image", TEAL, '"fluffy"', True),
+            ("next sound description", PURPLE, '"bark"', True),
+            ("next video frame", ORANGE, r'"$\blacktriangleright$ frame 42"', False),
         ]
 
         output_label_pos = RIGHT * 2.5 + UP * 1.0
@@ -450,11 +452,13 @@ class FromChatbotsToAgents(Scene):
         prev_value = None
         prev_arrow = None
 
-        for i, (label_text, color, value_text) in enumerate(output_configs):
+        for i, (label_text, color, value_text, tex_escape) in enumerate(output_configs):
             label = Text(label_text, font_size=15, color=color)
             label.move_to(output_label_pos)
 
-            value = make_pill(value_text, color=color, font_size=18)
+            value = make_pill(
+                value_text, color=color, font_size=18, tex_escape=tex_escape
+            )
             value.move_to(output_value_pos)
 
             arrow = Arrow(

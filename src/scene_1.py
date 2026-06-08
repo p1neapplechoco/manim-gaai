@@ -9,6 +9,8 @@ if "manimgl" in CMD:
 else:
     from manim import *
 
+from utils.tex_text import Text
+
 from pathlib import Path
 
 BASE_DIR = Path("/home/pineapple/Desktop/projects/manim-gaai")

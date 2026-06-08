@@ -10,6 +10,8 @@ if "manimgl" in CMD:
 else:
     from manim import *
 
+from utils.tex_text import Text
+
 BASE_DIR = Path("/home/pineapple/Desktop/projects/manim-gaai/")
 
 WHITE = "#F5F5F5"
@@ -532,7 +534,7 @@ class AttentionMechanism(Scene):
         n_full = 6
         full_gap = 1.2
         full_start = -(n_full - 1) * full_gap / 2
-        full_tokens = ["t₁", "t₂", "t₃", "t₄", "t₅", "t₆"]
+        full_tokens = [r"$t_1$", r"$t_2$", r"$t_3$", r"$t_4$", r"$t_5$", r"$t_6$"]
 
         full_dots = VGroup()
         full_labels = VGroup()
@@ -543,7 +545,7 @@ class AttentionMechanism(Scene):
             dot.move_to(RIGHT * cx + UP * 1.5)
             full_dots.add(dot)
 
-            lb = Text(full_tokens[i], font_size=13, color=WHITE)
+            lb = Tex(full_tokens[i], color=WHITE, font_size=20)
             lb.next_to(dot, DOWN, buff=0.12)
             full_labels.add(lb)
 

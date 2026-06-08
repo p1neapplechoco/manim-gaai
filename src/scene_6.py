@@ -10,6 +10,8 @@ if "manimgl" in CMD:
 else:
     from manim import *
 
+from utils.tex_text import Text
+
 
 WHITE = "#F5F5F5"
 BG = "#000000"

@@ -8,6 +8,8 @@ if "manimgl" in CMD:
 else:
     from manim import *
 
+from utils.tex_text import Text
+
 BASE_DIR = Path("/home/pineapple/Desktop/projects/manim-gaai/")
 
 WHITE = "#F5F5F5"
