@@ -11,7 +11,7 @@ else:
 BASE_DIR = Path("/home/pineapple/Desktop/projects/manim-gaai/")
 
 WHITE = "#F5F5F5"
-BG = "#0D0D0D"
+BG = "#000000"
 ACCENT = "#4FC3F7"
 GOLD = "#FFD54F"
 DIM = "#8A7676"
@@ -278,7 +278,7 @@ class FromChatbotsToAgents(Scene):
 
         # Multiple input types flowing into a neural network
         # Left side: different modality icons
-        sentence_icon = make_svg_icon("chat_bubble.svg", color=ACCENT, height=0.8)
+        sentence_icon = make_svg_icon("chat-bubble.svg", color=ACCENT, height=0.8)
         sentence_icon.move_to(LEFT * 5.0 + UP * 1.5)
 
         image_rect = VGroup(
@@ -538,7 +538,7 @@ class FromChatbotsToAgents(Scene):
 
         # Action icons orbit around it
         gear_icon = make_svg_icon("gear.svg", color=GREEN, height=0.6)
-        hand_icon = make_svg_icon("hand_pointer.svg", color=GREEN, height=0.6)
+        hand_icon = make_svg_icon("hand-pointer.svg", color=GREEN, height=0.6)
         eye_icon = make_svg_icon("eye.svg", color=GREEN, height=0.5)
 
         action_satellites = VGroup(gear_icon, hand_icon, eye_icon)
@@ -592,7 +592,7 @@ class FromChatbotsToAgents(Scene):
         chatbot_title = Text("chatbot", font_size=22, color=ACCENT)
         chatbot_title.move_to(LEFT * 3.5 + UP * 2.8)
 
-        chat_bubble = make_svg_icon("chat_bubble.svg", color=ACCENT, height=1.8)
+        chat_bubble = make_svg_icon("chat-bubble.svg", color=ACCENT, height=1.8)
         chat_bubble.move_to(LEFT * 3.5 + UP * 0.5)
 
         # Speech bubbles below — back-and-forth conversation
@@ -746,21 +746,37 @@ class FromChatbotsToAgents(Scene):
         #  Show "say" tokens becoming "do" tokens on a conveyor belt
         # ==============================================================
 
-        # Conveyor belt metaphor
-        belt_start = LEFT * 5.5 + DOWN * 0.5
-        belt_end = RIGHT * 5.5 + DOWN * 0.5
+        # ------------------------------------------------
+        # Layout constants
+        # ------------------------------------------------
+
+        BELT_Y = -0.55
+        ZONE_X = 1.55
+
+        belt_start = LEFT * 5.0 + UP * BELT_Y
+        belt_end = RIGHT * 5.0 + UP * BELT_Y
+
         belt = make_conveyor_belt(belt_start, belt_end, n_segments=20)
 
         self.play(FadeIn(belt), run_time=0.5)
 
-        # "Say" tokens on the left → transform into "Do" tokens on the right
-        say_tokens = VGroup()
+        # ------------------------------------------------
+        # Say tokens on the left
+        # ------------------------------------------------
+
         say_words = ["reply", "answer", "explain", "describe"]
-        say_positions = [LEFT * 4.0, LEFT * 2.5, LEFT * 1.0, RIGHT * 0.5]
-        for word, pos in zip(say_words, say_positions):
-            tok = make_token_box(word, color=ACCENT, font_size=12)
-            tok.move_to(pos + DOWN * 0.5)
-            say_tokens.add(tok)
+
+        say_tokens = VGroup(
+            *[make_token_box(word, color=ACCENT, font_size=11) for word in say_words]
+        )
+
+        say_tokens.arrange(RIGHT, buff=0.18)
+        say_tokens.move_to(LEFT * 2.7 + UP * BELT_Y)
+
+        # Safety: keep row compact
+        if say_tokens.width > 3.8:
+            say_tokens.scale_to_fit_width(3.8)
+            say_tokens.move_to(LEFT * 2.7 + UP * BELT_Y)
 
         self.play(
             LaggedStart(
@@ -769,48 +785,93 @@ class FromChatbotsToAgents(Scene):
             ),
             run_time=0.6,
         )
+
         self.wait(0.4)
 
-        # Transform zone — lightning in the middle
-        transform_zone = VGroup()
+        # ------------------------------------------------
+        # Transform zone in the middle
+        # ------------------------------------------------
+
         tz_rect = RoundedRectangle(
-            width=1.0,
-            height=1.5,
+            width=0.9,
+            height=1.35,
             corner_radius=0.12,
             color=GOLD,
             stroke_width=2,
             fill_color=GOLD,
             fill_opacity=0.05,
         )
-        tz_rect.move_to(RIGHT * 2.5 + DOWN * 0.5)
-        tz_lightning = make_svg_icon("lightning.svg", color=GOLD, height=0.7)
+
+        tz_rect.move_to(RIGHT * ZONE_X + UP * BELT_Y)
+
+        tz_lightning = make_svg_icon(
+            "lightning.svg",
+            color=GOLD,
+            height=0.62,
+        )
         tz_lightning.move_to(tz_rect.get_center())
-        transform_zone.add(tz_rect, tz_lightning)
 
-        self.play(FadeIn(transform_zone, scale=0.8), run_time=0.4)
+        transform_zone = VGroup(tz_rect, tz_lightning)
 
-        # Animate tokens sliding right and transforming
-        do_words = ["click", "search", "execute", "deploy"]
-        do_tokens = VGroup()
-        do_positions = [RIGHT * 3.8, RIGHT * 4.5, RIGHT * 5.2, RIGHT * 5.9]
-
-        for i, (say_tok, do_word, do_pos) in enumerate(
-            zip(say_tokens, do_words, do_positions)
-        ):
-            do_tok = make_token_box(do_word, color=GREEN, font_size=12)
-            do_tok.move_to(do_pos + DOWN * 0.5)
-            do_tokens.add(do_tok)
-
-        # Slide all say tokens toward the transform zone and swap
         self.play(
-            *[tok.animate.move_to(tz_rect.get_center()) for tok in say_tokens],
+            FadeIn(transform_zone, scale=0.8),
+            run_time=0.4,
+        )
+
+        # ------------------------------------------------
+        # Do tokens on the right — arranged, not hard-coded
+        # ------------------------------------------------
+
+        do_words = ["click", "search", "execute", "deploy"]
+
+        do_tokens = VGroup(
+            *[make_token_box(word, color=GREEN, font_size=10) for word in do_words]
+        )
+
+        do_tokens.arrange(RIGHT, buff=0.16)
+        do_tokens.next_to(tz_rect, RIGHT, buff=0.55)
+        do_tokens.set_y(BELT_Y)
+
+        # Safety: prevent right-edge clipping / overlap
+        if do_tokens.get_right()[0] > 5.7:
+            do_tokens.scale_to_fit_width(2.8)
+            do_tokens.next_to(tz_rect, RIGHT, buff=0.45)
+            do_tokens.set_y(BELT_Y)
+
+        # ------------------------------------------------
+        # Slide say tokens into transform zone
+        # ------------------------------------------------
+
+        target_positions = [
+            tz_rect.get_center() + LEFT * 0.15,
+            tz_rect.get_center() + LEFT * 0.05,
+            tz_rect.get_center() + RIGHT * 0.05,
+            tz_rect.get_center() + RIGHT * 0.15,
+        ]
+
+        self.play(
+            *[
+                tok.animate.move_to(target_positions[i])
+                for i, tok in enumerate(say_tokens)
+            ],
             run_time=0.6,
         )
+
         self.play(
-            Flash(tz_rect.get_center(), color=GOLD, flash_radius=0.8, num_lines=8),
+            Flash(
+                tz_rect.get_center(),
+                color=GOLD,
+                flash_radius=0.75,
+                num_lines=8,
+            ),
             FadeOut(say_tokens),
             run_time=0.3,
         )
+
+        # ------------------------------------------------
+        # Reveal do tokens cleanly
+        # ------------------------------------------------
+
         self.play(
             LaggedStart(
                 *[FadeIn(tok, shift=RIGHT * 0.2) for tok in do_tokens],
@@ -818,6 +879,7 @@ class FromChatbotsToAgents(Scene):
             ),
             run_time=0.6,
         )
+
         # [19:49] The bridge: "say" tokens transform into "do" tokens
         self.wait(1.5)
 
@@ -845,7 +907,7 @@ class FromChatbotsToAgents(Scene):
         llm_label.move_to(llm_box.get_center() + UP * 0.2)
         llm_desc = Text("says", font_size=13, color=DIM)
         llm_desc.move_to(llm_box.get_center() + DOWN * 0.25)
-        chat_icon_small = make_svg_icon("chat_bubble.svg", color=ACCENT, height=0.5)
+        chat_icon_small = make_svg_icon("chat-bubble.svg", color=ACCENT, height=0.5)
         chat_icon_small.next_to(llm_box, UP, buff=0.15)
 
         # Stage 2: Agent
@@ -970,6 +1032,8 @@ class FromChatbotsToAgents(Scene):
             arr_1,
             arr_2,
         )
+
+        # Move/scale LAM first
         self.play(
             non_lam.animate.set_opacity(0.15),
             lam_box.animate.move_to(LEFT * 1.5).scale(1.3),
@@ -980,39 +1044,59 @@ class FromChatbotsToAgents(Scene):
             run_time=0.8,
         )
 
-        # Action outputs radiating from the LAM
+        # --------------------------------------------------------------
+        # Action outputs from LAM
+        # --------------------------------------------------------------
+
         actions = [
+            ("analyze data", PINK),
             ("browse web", TEAL),
             ("write code", ACCENT),
             ("send message", GOLD),
             ("run command", ORANGE),
             ("book flight", PURPLE),
-            ("analyze data", PINK),
         ]
 
         action_groups = VGroup()
-        action_angles = [PI / 4, PI / 8, -PI / 8, -PI / 4, -3 * PI / 8, 3 * PI / 8]
-        action_radius = 2.8
 
-        for (act_text, act_color), angle in zip(actions, action_angles):
-            pos = LEFT * 1.5 + action_radius * np.array(
-                [np.cos(angle), np.sin(angle), 0]
-            )
-            # Shift everything to the right so actions spread nicely
-            pos = pos + RIGHT * 2.0
+        # Fixed right-side column layout
+        ACTION_X = 2.85
+        ACTION_YS = [1.45, 0.9, 0.35, -0.35, -0.9, -1.45]
 
-            act_pill = make_pill(act_text, color=act_color, font_size=12)
-            act_pill.move_to(pos)
-
-            act_line = Line(
-                LEFT * 1.5,
-                pos,
+        for (act_text, act_color), y in zip(actions, ACTION_YS):
+            # Make action pill
+            act_pill = make_pill(
+                act_text,
                 color=act_color,
-                stroke_width=0.8,
-                stroke_opacity=0.4,
+                font_size=12,
+            )
+            act_pill.move_to(RIGHT * ACTION_X + UP * y)
+
+            # Arrow starts from the RIGHT EDGE of the LAM box
+            start_point = lam_box.get_right() + RIGHT * 0.08
+
+            # Arrow ends at the LEFT EDGE of the action pill
+            end_point = act_pill.get_left() + LEFT * 0.08
+
+            # Curve direction depends on whether the pill is above/below center
+            if y > 0.15:
+                curve_angle = 0.28
+            elif y < -0.15:
+                curve_angle = -0.28
+            else:
+                curve_angle = 0.08
+
+            act_arrow = CurvedArrow(
+                start_point,
+                end_point,
+                angle=curve_angle,
+                color=act_color,
+                stroke_width=1.2,
+                stroke_opacity=0.55,
+                tip_length=0.10,
             )
 
-            action_groups.add(VGroup(act_line, act_pill))
+            action_groups.add(VGroup(act_arrow, act_pill))
 
         self.play(
             LaggedStart(
@@ -1028,13 +1112,21 @@ class FromChatbotsToAgents(Scene):
             run_time=1.2,
         )
 
+        # --------------------------------------------------------------
         # Subtle pulsing glow on each action
+        # --------------------------------------------------------------
+
         for grp in action_groups:
             pill = grp[1]
-            glow = pill[0].copy().set_stroke(width=3, opacity=0.6)
+
+            # Usually pill[0] is the rounded rectangle background
+            glow = pill[0].copy()
+            glow.set_fill(opacity=0)
+            glow.set_stroke(width=3, opacity=0.65)
+
             self.play(
-                FadeIn(glow, run_time=0.1),
-                FadeOut(glow, run_time=0.15),
+                FadeIn(glow, run_time=0.08),
+                FadeOut(glow, run_time=0.12),
             )
 
         self.wait(1.0)

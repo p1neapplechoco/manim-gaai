@@ -28,10 +28,21 @@ class NgramToRNN(Scene):
         #  Visual: sentence with a sliding "fixed window" highlight
         # ================================================================
 
-        words = ["The", "capital", "of", "France", "is"]
-        word_mobs = VGroup(*[Text(w, font_size=30, color=WHITE) for w in words])
-        word_mobs.arrange(RIGHT, buff=0.25)
-        word_mobs.move_to(UP * 1.0)
+        # IMPORTANT:
+        # Use Tex with separated arguments instead of separate Text objects.
+        # This keeps all words on the same baseline, while still letting us
+        # animate/highlight each word individually.
+        word_mobs = Tex(
+            r"\text{The}",
+            r"\ \text{capital}",
+            r"\ \text{of}",
+            r"\ \text{France}",
+            r"\ \text{is}",
+            font_size=40,
+            color=WHITE,
+        )
+
+        word_mobs.move_to(LEFT + UP * 1.0)
 
         # Blank prediction box
         blank = RoundedRectangle(
@@ -43,9 +54,12 @@ class NgramToRNN(Scene):
             fill_color="#1A1500",
             fill_opacity=1,
         )
+
         q_mark = Text("?", font_size=28, color=GOLD)
+
         blank.next_to(word_mobs, RIGHT, buff=0.25)
         q_mark.move_to(blank)
+
         blank_grp = VGroup(blank, q_mark)
 
         self.play(
@@ -55,14 +69,19 @@ class NgramToRNN(Scene):
             ),
             run_time=1.0,
         )
+
         self.play(FadeIn(blank_grp, scale=0.9), run_time=0.4)
+
         # [5:18] The earliest LMs looked at a fixed number of previous words
         self.wait(3.0)
 
         # Sliding window — highlights n-1 previous words
+        def make_phrase(si, ei):
+            return VGroup(*[word_mobs[i] for i in range(si, ei + 1)])
+
         def make_window(si, ei):
             return SurroundingRectangle(
-                VGroup(*word_mobs[si : ei + 1]),
+                make_phrase(si, ei),
                 color=ACCENT,
                 buff=0.1,
                 corner_radius=0.08,
@@ -72,7 +91,9 @@ class NgramToRNN(Scene):
             )
 
         window = make_window(3, 4)
-        bracket = Brace(VGroup(*word_mobs[3:5]), DOWN, color=ACCENT)
+
+        bracket = Brace(make_phrase(3, 4), DOWN, color=ACCENT)
+
         br_label = Text("fixed window", font_size=16, color=ACCENT)
         br_label.next_to(bracket, DOWN, buff=0.1)
 
@@ -82,30 +103,43 @@ class NgramToRNN(Scene):
             FadeIn(br_label),
             run_time=0.7,
         )
+
         # [5:31] n represents the number of words, context is n-1 words
         self.wait(3.0)
 
         # Slide the window across the sentence
         for si in [2, 0]:
             ei = si + 1
+
             nw = make_window(si, ei)
-            nb = Brace(VGroup(*word_mobs[si : ei + 1]), DOWN, color=ACCENT)
+
+            nb = Brace(make_phrase(si, ei), DOWN, color=ACCENT)
+
             nl = Text("fixed window", font_size=16, color=ACCENT)
             nl.next_to(nb, DOWN, buff=0.1)
+
             self.play(
                 Transform(window, nw),
                 Transform(bracket, nb),
                 Transform(br_label, nl),
                 run_time=0.6,
             )
+
             self.wait(1.5)
 
         # Small tally marks — visual for "counting"
         tally = VGroup()
+
         for i in range(4):
-            tick = Line(UP * 0.18, DOWN * 0.18, color=SEPIA, stroke_width=2)
+            tick = Line(
+                UP * 0.18,
+                DOWN * 0.18,
+                color=SEPIA,
+                stroke_width=2,
+            )
             tick.shift(DOWN * 2.0 + LEFT * 0.25 + RIGHT * i * 0.15)
             tally.add(tick)
+
         cross = Line(
             tally[0].get_bottom() + LEFT * 0.03,
             tally[3].get_top() + RIGHT * 0.03,
@@ -122,16 +156,43 @@ class NgramToRNN(Scene):
             FadeIn(ct_label),
             run_time=0.6,
         )
+
         # [5:40] n usually ranges from 1 to 6
         self.wait(4.0)
 
         self.play(*[FadeOut(m) for m in self.mobjects], run_time=0.6)
         self.wait(2.0)
-
-        # ================================================================
+        # # ================================================================
         #  PART 2 — N-GRAM NAMING
         #  Visual: rows of (n value, name, box diagram)
         # ================================================================
+
+        def make_token_box():
+            return RoundedRectangle(
+                width=0.35,
+                height=0.35,
+                corner_radius=0.05,
+                color=GOLD,
+                stroke_width=1.5,
+                fill_color=GOLD,
+                fill_opacity=0.15,
+            )
+
+        def place_left(mob, x, y):
+            """
+            Put mob at y, with its left edge fixed at x.
+            This makes columns align cleanly.
+            """
+            mob.move_to(RIGHT * (x + mob.width / 2) + UP * y)
+            return mob
+
+        # Fixed column coordinates
+        N_X = -2.8  # center position for n labels
+        NAME_LEFT = -1.65  # left edge of name column
+        BOX_LEFT = 0.65  # left edge of box diagram column
+
+        ROW_TOP = 1.65
+        ROW_GAP = 0.75
 
         ngram_data = [
             (1, "unigram"),
@@ -140,67 +201,58 @@ class NgramToRNN(Scene):
         ]
 
         rows = VGroup()
-        for n, name in ngram_data:
-            n_lab = MathTex(f"n = {n}", font_size=26, color=ACCENT)
-            nm_lab = Text(name, font_size=24, color=WHITE)
-            boxes = VGroup(
-                *[
-                    RoundedRectangle(
-                        width=0.35,
-                        height=0.35,
-                        corner_radius=0.05,
-                        color=GOLD,
-                        stroke_width=1.5,
-                        fill_color=GOLD,
-                        fill_opacity=0.15,
-                    )
-                    for _ in range(n)
-                ]
-            )
-            boxes.arrange(RIGHT, buff=0.06)
-            row = VGroup(n_lab, nm_lab, boxes).arrange(RIGHT, buff=0.6)
-            rows.add(row)
 
-        rows.arrange(DOWN, buff=0.6, aligned_edge=LEFT)
-        rows.move_to(UP * 0.8)
+        for i, (n, name) in enumerate(ngram_data):
+            y = ROW_TOP - i * ROW_GAP
+
+            n_lab = MathTex(f"n = {n}", font_size=26, color=ACCENT)
+            n_lab.move_to(RIGHT * N_X + UP * y)
+
+            nm_lab = Text(name, font_size=24, color=WHITE)
+            place_left(nm_lab, NAME_LEFT, y)
+
+            boxes = VGroup(*[make_token_box() for _ in range(n)])
+            boxes.arrange(RIGHT, buff=0.06)
+            place_left(boxes, BOX_LEFT, y)
+
+            row = VGroup(n_lab, nm_lab, boxes)
+            rows.add(row)
 
         for row in rows:
             self.play(FadeIn(row, shift=RIGHT * 0.15), run_time=0.5)
-            # [5:48] unigram for n=1, bigram for n=2
             self.wait(2.0)
 
-        # General n-gram row
-        vdots = MathTex(r"\vdots", font_size=28, color=DIM)
-        vdots.next_to(rows, DOWN, buff=0.3)
-        vdots.align_to(rows, LEFT).shift(RIGHT * 0.5)
-
-        gen_n = MathTex("n", font_size=26, color=ACCENT)
-        gen_name = Text("n-gram", font_size=24, color=WHITE)
-        gen_box1 = RoundedRectangle(
-            width=0.35,
-            height=0.35,
-            corner_radius=0.05,
-            color=GOLD,
-            stroke_width=1.5,
-            fill_color=GOLD,
-            fill_opacity=0.15,
-        )
-        gen_box2 = gen_box1.copy()
-        gen_dots = MathTex(r"\cdots", font_size=20, color=GOLD)
-        gen_box3 = gen_box1.copy()
-        gen_boxes = VGroup(gen_box1, gen_box2, gen_dots, gen_box3)
-        gen_boxes.arrange(RIGHT, buff=0.06)
-        gen_row = VGroup(gen_n, gen_name, gen_boxes).arrange(RIGHT, buff=0.6)
-        gen_row.next_to(vdots, DOWN, buff=0.3)
-        gen_row.align_to(rows, LEFT)
+        # Vertical dots row
+        dot_y = ROW_TOP - 3 * ROW_GAP
+        vdots = MathTex(r"\vdots", font_size=30, color=DIM)
+        vdots.move_to(RIGHT * N_X + UP * dot_y)
 
         self.play(FadeIn(vdots), run_time=0.3)
+
+        # General n-gram row
+        gen_y = ROW_TOP - 4 * ROW_GAP
+
+        gen_n = MathTex("n", font_size=26, color=ACCENT)
+        gen_n.move_to(RIGHT * N_X + UP * gen_y)
+
+        gen_name = Text("n-gram", font_size=24, color=WHITE)
+        place_left(gen_name, NAME_LEFT, gen_y)
+
+        gen_box1 = make_token_box()
+        gen_box2 = make_token_box()
+        gen_dots = MathTex(r"\cdots", font_size=20, color=GOLD)
+        gen_box3 = make_token_box()
+
+        gen_boxes = VGroup(gen_box1, gen_box2, gen_dots, gen_box3)
+        gen_boxes.arrange(RIGHT, buff=0.06)
+        place_left(gen_boxes, BOX_LEFT, gen_y)
+
+        gen_row = VGroup(gen_n, gen_name, gen_boxes)
+
         self.play(FadeIn(gen_row, shift=RIGHT * 0.15), run_time=0.5)
-        # [5:54] The main problem is that n-gram models do not scale well
         self.wait(4.0)
 
         self.play(*[FadeOut(m) for m in self.mobjects], run_time=0.6)
-
         # ================================================================
         #  PART 3 — EXPONENTIAL GROWTH   V^n
         #  Visual: bars that grow exponentially, trigram crashes off-screen
@@ -238,7 +290,7 @@ class NgramToRNN(Scene):
         bar_specs = [
             ("unigram", r"V", 0.7, ACCENT, "50K"),
             ("bigram", r"V^2", 2.0, GOLD, "2.5B"),
-            ("trigram", r"V^3", 10.0, RED, "125T"),
+            ("trigram", r"", 10.0, RED, ""),
         ]
         x_pos = [-2.8, 0, 2.8]
         bar_w = 1.0
@@ -426,8 +478,27 @@ class NgramToRNN(Scene):
         #  Visual: two phrases with count bars, "brute-force" label
         # ================================================================
 
+        def place_left(mob, x, y):
+            """
+            Place a mobject using fixed left-edge x and center y.
+            Useful for clean column alignment.
+            """
+            mob.move_to(RIGHT * (x + mob.width / 2) + UP * y)
+            return mob
+
+        # Fixed layout columns
+        PHRASE_LEFT = -4.4
+        BAR_LEFT = -4.4
+        COUNT_X = 1.25
+
+        ROW1_Y = 1.65
+        ROW2_Y = -0.45
+
+        BAR_OFFSET_Y = -0.55
+
         ph1 = Text('"…France is Paris"', font_size=22, color=WHITE)
         ct1 = Text("1,247×", font_size=20, color=GOLD)
+
         b1 = Rectangle(
             width=4.0,
             height=0.32,
@@ -439,6 +510,7 @@ class NgramToRNN(Scene):
 
         ph2 = Text('"…France is London"', font_size=22, color=WHITE)
         ct2 = Text("12×", font_size=20, color=DIM)
+
         b2 = Rectangle(
             width=0.4,
             height=0.32,
@@ -448,20 +520,24 @@ class NgramToRNN(Scene):
             stroke_width=1,
         )
 
-        ph1.move_to(UP * 1.6 + LEFT * 1.5)
-        ct1.next_to(ph1, RIGHT, buff=0.4)
-        b1.next_to(ph1, DOWN, buff=0.25)
-        b1.align_to(ph1, LEFT)
+        # Phrase column
+        place_left(ph1, PHRASE_LEFT, ROW1_Y)
+        place_left(ph2, PHRASE_LEFT, ROW2_Y)
 
-        ph2.move_to(DOWN * 0.3 + LEFT * 1.5)
-        ct2.next_to(ph2, RIGHT, buff=0.4)
-        b2.next_to(ph2, DOWN, buff=0.25)
-        b2.align_to(ph2, LEFT)
+        # Count column, fixed x
+        ct1.move_to(RIGHT * COUNT_X + UP * ROW1_Y)
+        ct2.move_to(RIGHT * COUNT_X + UP * ROW2_Y)
+
+        # Bar column, fixed left edge
+        place_left(b1, BAR_LEFT, ROW1_Y + BAR_OFFSET_Y)
+        place_left(b2, BAR_LEFT, ROW2_Y + BAR_OFFSET_Y)
 
         # Phrase 1 + bar
         self.play(Write(ph1), run_time=0.6)
+
         b1.save_state()
         b1.stretch(0, 0, about_edge=LEFT)
+
         self.play(
             b1.animate.restore(),
             FadeIn(ct1),
@@ -470,47 +546,60 @@ class NgramToRNN(Scene):
 
         # Phrase 2 + bar
         self.play(Write(ph2), run_time=0.6)
+
         b2.save_state()
         b2.stretch(0, 0, about_edge=LEFT)
+
         self.play(
             b2.animate.restore(),
             FadeIn(ct2),
             run_time=0.4,
         )
+
         # [7:52] Count how often patterns appear
         self.wait(3.0)
 
         # Arrow pointing to the bigger bar
+        # Keep this text under the big bar, not near the brace.
+        pick_lab = Text("pick the bigger count", font_size=16, color=DIM)
+        pick_lab.next_to(b1, DOWN, buff=0.28)
+        pick_lab.align_to(b1, RIGHT).shift(LEFT * 0.55)
+
         pick_arrow = Arrow(
-            b1.get_right() + RIGHT * 0.3 + DOWN * 0.5,
-            b1.get_right() + RIGHT * 0.1,
+            pick_lab.get_top() + UP * 0.05 + RIGHT * 0.4,
+            b1.get_right() + LEFT * 0.08,
             buff=0.05,
             color=GOLD,
             stroke_width=2,
-            max_tip_length_to_length_ratio=0.3,
+            max_tip_length_to_length_ratio=0.25,
         )
-        pick_lab = Text("pick the bigger count", font_size=16, color=DIM)
-        pick_lab.next_to(pick_arrow, DOWN, buff=0.12)
 
-        self.play(GrowArrow(pick_arrow), FadeIn(pick_lab), run_time=0.5)
+        self.play(
+            GrowArrow(pick_arrow),
+            FadeIn(pick_lab),
+            run_time=0.5,
+        )
+
         self.wait(2.0)
 
         # "brute-force" bracket
+        # Brace only the counting structure, then put label clearly to the right.
         all_counts = VGroup(ph1, b1, ct1, ph2, b2, ct2)
+
         bf_brace = Brace(all_counts, RIGHT, color=RED)
         bf_lab = Text("brute-force", font_size=20, color=RED)
-        bf_lab.next_to(bf_brace, RIGHT, buff=0.2)
+        bf_lab.next_to(bf_brace, RIGHT, buff=0.35)
 
         self.play(
             GrowFromCenter(bf_brace),
             Write(bf_lab),
             run_time=0.6,
         )
+
         # [7:59] Simple, intuitive, almost brute-force
         self.wait(4.0)
 
         self.play(*[FadeOut(m) for m in self.mobjects], run_time=0.6)
-
         # ================================================================
         #  PART 6 — THE BRUTE-FORCE WALL
         #  Visual: giant lookup table with red ✗
@@ -745,7 +834,7 @@ class NgramToRNN(Scene):
         loop = CurvedArrow(
             model_box.get_top() + LEFT * 0.25,
             model_box.get_top() + RIGHT * 0.25,
-            angle=PI,
+            angle=-PI,
             color=GOLD,
             stroke_width=2.5,
             tip_length=0.15,

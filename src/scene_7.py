@@ -40,6 +40,8 @@ PATCH_COLORS = [
     "#26C6DA",
 ]
 
+# ── helpers ─────────────────────────────────────────────────────────
+
 
 def make_robot(scale_factor=1.0):
     """Build the robot from the project SVG asset."""
@@ -52,6 +54,58 @@ def make_robot(scale_factor=1.0):
     )
     robot.set_height(2.4 * scale_factor)
     return robot
+
+
+def make_patch_grid(image_mob, rows=3, cols=3):
+    """Create a grid overlay on an image, returning (grid_lines, patch_rects)."""
+    w = image_mob.width
+    h = image_mob.height
+    corner = image_mob.get_corner(UL)
+
+    grid_lines = VGroup()
+    # Horizontal lines
+    for r in range(1, rows):
+        y = corner[1] - r * h / rows
+        grid_lines.add(
+            Line(
+                [corner[0], y, 0],
+                [corner[0] + w, y, 0],
+                color=ACCENT,
+                stroke_width=1.5,
+                stroke_opacity=0.8,
+            )
+        )
+    # Vertical lines
+    for c in range(1, cols):
+        x = corner[0] + c * w / cols
+        grid_lines.add(
+            Line(
+                [x, corner[1], 0],
+                [x, corner[1] - h, 0],
+                color=ACCENT,
+                stroke_width=1.5,
+                stroke_opacity=0.8,
+            )
+        )
+
+    patch_rects = VGroup()
+    for r in range(rows):
+        for c in range(cols):
+            rect = Rectangle(
+                width=w / cols,
+                height=h / rows,
+                color=ACCENT,
+                stroke_width=1.2,
+                stroke_opacity=0.6,
+                fill_color=ACCENT,
+                fill_opacity=0.05,
+            )
+            rect.move_to(
+                corner + RIGHT * (c + 0.5) * w / cols + DOWN * (r + 0.5) * h / rows
+            )
+            patch_rects.add(rect)
+
+    return grid_lines, patch_rects
 
 
 def make_patch_token(color, size=0.28):
@@ -168,8 +222,97 @@ class MultimodalModels(Scene):
     def construct(self):
         self.camera.background_color = BG
 
+        # ==============================================================
+        #  PART 1 — DOG IMAGE + HUMAN BRAIN PROCESSING
+        # ==============================================================
+
+        # Show the dog image
+        dog_img = ImageMobject(str(BASE_DIR / "assets" / "images" / "dancing_dog.jpg"))
+        dog_img.scale_to_fit_height(3.0)
+        dog_img.move_to(LEFT * 2.5)
+
+        # Rounded border for the image
+        img_border = RoundedRectangle(
+            width=dog_img.width + 0.1,
+            height=dog_img.height + 0.1,
+            corner_radius=0.12,
+            color=DIM2,
+            stroke_width=1.5,
+        )
+        img_border.move_to(dog_img)
+
+        self.play(FadeIn(dog_img, scale=0.9), Create(img_border), run_time=0.8)
+        # [18:00] Dog image + brain processing
+        self.wait(1.0)
+
+        # Brain SVG on the right
+        brain = SVGMobject(str(BASE_DIR / "assets" / "svgs" / "brain.svg"))
+        brain.set_color(WHITE)
+        brain.set_stroke(WHITE, width=1.2)
+        brain.scale_to_fit_height(1.8)
+        brain.move_to(RIGHT * 2.5 + UP * 0.5)
+
+        self.play(FadeIn(brain, shift=RIGHT * 0.2), run_time=0.6)
+        self.wait(0.3)
+
+        # Arrow from dog image to brain: "sees"
+        see_arrow = Arrow(
+            dog_img.get_right() + RIGHT * 0.1,
+            brain.get_left() + LEFT * 0.1,
+            buff=0.15,
+            color=DIM,
+            stroke_width=1.8,
+            max_tip_length_to_length_ratio=0.15,
+        )
+        self.play(GrowArrow(see_arrow), run_time=0.4)
+        self.wait(0.3)
+
+        # Brain "thinking" — associated concepts bubble out
+        concepts = ["dog", "animal", "fur", "barking", "pet"]
+        concept_colors = [GOLD, ACCENT, ORANGE, TEAL, GREEN]
+
+        concept_mobs = VGroup()
+        angles = [PI / 3, PI / 5, -PI / 6, -PI / 3, 0]
+        radii = [1.4, 1.5, 1.3, 1.5, 1.6]
+
+        for i, (word, color, angle, r) in enumerate(
+            zip(concepts, concept_colors, angles, radii)
+        ):
+            t = Text(word, font_size=16, color=color)
+            t.move_to(
+                brain.get_center() + r * np.array([np.cos(angle), np.sin(angle), 0])
+            )
+            concept_mobs.add(t)
+
+        # Thought connector lines
+        thought_lines = VGroup()
+        for cm in concept_mobs:
+            line = DashedLine(
+                brain.get_center(),
+                cm.get_center(),
+                color=DIM2,
+                stroke_width=0.8,
+                dash_length=0.08,
+            )
+            thought_lines.add(line)
+
+        self.play(
+            LaggedStart(
+                *[
+                    AnimationGroup(Create(line), FadeIn(cm, scale=0.7))
+                    for line, cm in zip(thought_lines, concept_mobs)
+                ],
+                lag_ratio=0.12,
+            ),
+            run_time=1.2,
+        )
+        # [18:06] Brain associates concepts: dog, animal, fur
+        self.wait(2.0)
+
+        # Clean transition
+        self.play(*[FadeOut(m) for m in self.mobjects], run_time=0.7)
         # ================================================================
-        #  PART 1 — VISION MULTIMODAL
+        #  PART 2 — VISION MULTIMODAL
         #  Dog image → patches → visual tokens → robot → text concepts
         # ================================================================
 
@@ -421,24 +564,172 @@ class MultimodalModels(Scene):
         # --- Transition out Part 1 ---
         self.play(*[FadeOut(m) for m in self.mobjects], run_time=0.8)
 
-        # ================================================================
-        #  INTERLUDE — The key insight
-        # ================================================================
+        # ==============================================================
+        #  PART 4 — KEY INSIGHT: different data, same representations
+        # ==============================================================
 
-        insight = Text(
-            "different data, same reasoning",
-            font_size=26,
-            color=WHITE,
+        # Three modality icons with arrows converging to a single "representation"
+
+        # Image modality
+        img_icon = Rectangle(
+            width=1.0,
+            height=0.8,
+            color=ACCENT,
+            stroke_width=1.5,
+            fill_color=ACCENT,
+            fill_opacity=0.1,
         )
-        insight.move_to(ORIGIN)
+        img_icon_label = Text("image", font_size=14, color=ACCENT)
+        img_grid = VGroup()
+        for r in range(2):
+            for c in range(3):
+                sq = Square(
+                    side_length=0.18, color=ACCENT, stroke_width=0.6, fill_opacity=0.15
+                )
+                sq.move_to(
+                    img_icon.get_center()
+                    + RIGHT * (c - 1) * 0.22
+                    + UP * (0.5 - r) * 0.22
+                )
+                img_grid.add(sq)
+        img_mod = VGroup(img_icon, img_grid, img_icon_label)
+        img_icon_label.next_to(img_icon, DOWN, buff=0.12)
 
-        self.play(Write(insight), run_time=0.9)
-        # [17:48] The key insight: different data, same reasoning
-        self.wait(2.0)
+        # Text modality
+        text_icon = Rectangle(
+            width=1.0,
+            height=0.8,
+            color=GOLD,
+            stroke_width=1.5,
+            fill_color=GOLD,
+            fill_opacity=0.1,
+        )
+        text_lines = VGroup()
+        for i in range(3):
+            w = [0.6, 0.45, 0.55][i]
+            line = Line(LEFT * w / 2, RIGHT * w / 2, color=GOLD, stroke_width=1.2)
+            line.move_to(text_icon.get_center() + UP * (0.2 - i * 0.2))
+            text_lines.add(line)
+        text_icon_label = Text("text", font_size=14, color=GOLD)
+        text_icon_label.next_to(text_icon, DOWN, buff=0.12)
+        text_mod = VGroup(text_icon, text_lines, text_icon_label)
+
+        # Action modality
+        action_icon = Rectangle(
+            width=1.0,
+            height=0.8,
+            color=GREEN,
+            stroke_width=1.5,
+            fill_color=GREEN,
+            fill_opacity=0.1,
+        )
+        # Small arrow inside representing action
+        act_arr = Arrow(
+            action_icon.get_center() + LEFT * 0.25,
+            action_icon.get_center() + RIGHT * 0.25,
+            buff=0,
+            color=GREEN,
+            stroke_width=1.5,
+            max_tip_length_to_length_ratio=0.3,
+        )
+        action_icon_label = Text("action", font_size=14, color=GREEN)
+        action_icon_label.next_to(action_icon, DOWN, buff=0.12)
+        action_mod = VGroup(action_icon, act_arr, action_icon_label)
+
+        # Position them
+        modalities = VGroup(img_mod, text_mod, action_mod)
+        modalities.arrange(DOWN, buff=0.6)
+        modalities.move_to(LEFT * 3.5)
+
+        # Central representation
+        repr_box = RoundedRectangle(
+            width=2.0,
+            height=1.0,
+            corner_radius=0.15,
+            color=PURPLE,
+            stroke_width=2,
+            fill_color=PURPLE,
+            fill_opacity=0.08,
+        )
+        repr_box.move_to(ORIGIN)
+        repr_label = Text("shared\nrepresentation", font_size=14, color=PURPLE)
+        repr_label.move_to(repr_box)
+
+        # Model box on the right
+        model_box = RoundedRectangle(
+            width=1.8,
+            height=1.0,
+            corner_radius=0.12,
+            color=WHITE,
+            stroke_width=1.5,
+            fill_color=BG,
+            fill_opacity=1,
+        )
+        model_box.move_to(RIGHT * 3.5)
+        model_label = Text("same\nmodel", font_size=14, color=WHITE)
+        model_label.move_to(model_box)
+
+        # Arrows: modalities → representation → model
+        mod_arrows = VGroup()
+        for mod in modalities:
+            arr = Arrow(
+                mod.get_right(),
+                repr_box.get_left(),
+                buff=0.15,
+                color=DIM,
+                stroke_width=1.2,
+                max_tip_length_to_length_ratio=0.15,
+            )
+            mod_arrows.add(arr)
+
+        repr_to_model = Arrow(
+            repr_box.get_right(),
+            model_box.get_left(),
+            buff=0.15,
+            color=PURPLE,
+            stroke_width=1.5,
+            max_tip_length_to_length_ratio=0.12,
+        )
+
+        # Animate
         self.play(
-            insight.animate.scale(0.5).to_edge(UP, buff=0.4).set_color(DIM),
+            LaggedStart(
+                *[FadeIn(mod, shift=RIGHT * 0.15) for mod in modalities],
+                lag_ratio=0.15,
+            ),
+            run_time=0.8,
+        )
+        self.play(
+            LaggedStart(*[GrowArrow(a) for a in mod_arrows], lag_ratio=0.1),
             run_time=0.6,
         )
+        self.play(
+            FadeIn(repr_box, scale=0.9),
+            FadeIn(repr_label),
+            run_time=0.5,
+        )
+        self.play(GrowArrow(repr_to_model), run_time=0.4)
+        self.play(
+            FadeIn(model_box, scale=0.9),
+            FadeIn(model_label),
+            run_time=0.5,
+        )
+
+        # Glow on repr_box to emphasize
+        repr_glow = SurroundingRectangle(
+            repr_box,
+            color=PURPLE,
+            buff=0.1,
+            corner_radius=0.18,
+            stroke_width=2,
+            fill_color=PURPLE,
+            fill_opacity=0.06,
+        )
+        self.play(Create(repr_glow), run_time=0.4)
+        # [18:30] Different data, same shared representation
+        self.wait(2.0)
+
+        self.play(*[FadeOut(m) for m in self.mobjects], run_time=0.7)
 
         # ================================================================
         #  PART 2 — ACTION-BASED MULTIMODAL
@@ -487,7 +778,6 @@ class MultimodalModels(Scene):
             FadeOut(env),
             FadeOut(env_label),
             FadeOut(env_to_robot),
-            FadeOut(insight),
             run_time=0.8,
         )
         self.remove(env_copy)

@@ -11,7 +11,7 @@ else:
 BASE_DIR = Path("/home/pineapple/Desktop/projects/manim-gaai/")
 
 WHITE = "#F5F5F5"
-BG = "#0D0D0D"
+BG = "#000000"
 ACCENT = "#4FC3F7"
 GOLD = "#FFD54F"
 DIM = "#8A7676"
@@ -179,7 +179,7 @@ class AgentEvaluation(Scene):
         env_configs = [
             ("document.svg", ACCENT, PI / 2),
             ("gear.svg", GOLD, -PI / 6),
-            ("browser.svg", TEAL, -PI / 2 - PI / 6),
+            ("browser.svg", TEAL, -PI / 2 - PI / 3),
         ]
 
         env_icons = VGroup()
@@ -221,38 +221,19 @@ class AgentEvaluation(Scene):
         eye.move_to(llm_hex.get_center() + UP * 2.5 + LEFT * 1.0)
 
         # Magnifying circle
-        mag_circle = Circle(
-            radius=0.6,
-            color=GOLD,
-            stroke_width=2.0,
-            stroke_opacity=0.6,
-            fill_color=GOLD,
-            fill_opacity=0.03,
-        )
-        mag_circle.move_to(eye.get_center())
-        mag_group = VGroup(mag_circle, eye)
 
-        self.play(FadeIn(mag_group, scale=0.6), run_time=0.4)
+        self.play(FadeIn(eye, scale=0.6), run_time=0.4)
 
         # Sweep down over the loop
         self.play(
-            mag_group.animate.move_to(llm_hex.get_center()),
+            eye.animate.move_to(llm_hex.get_center()),
             run_time=0.8,
             rate_func=smooth,
         )
 
-        # Pulse when reaching center
-        pulse = mag_circle.copy().set_stroke(GOLD, width=3.5, opacity=0.6)
-        self.play(FadeIn(pulse), run_time=0.12)
-        self.play(
-            pulse.animate.scale(1.5).set_opacity(0),
-            run_time=0.4,
-        )
-        self.remove(pulse)
-
         # Move magnifying glass aside
         self.play(
-            mag_group.animate.move_to(LEFT * 2.5 + DOWN * 2.5).scale(0.5).set_opacity(0.3),
+            eye.animate.move_to(LEFT * 2.5 + DOWN * 2.5).scale(0.5).set_opacity(0.3),
             run_time=0.5,
         )
 
@@ -461,7 +442,7 @@ class AgentEvaluation(Scene):
         # All cards are currently off-screen or faded. Bring them all back.
         grid = VGroup(*all_cards)
         grid.arrange_in_grid(rows=2, cols=2, buff=0.35)
-        grid.scale_to_fit_width(10.5)
+        grid.scale_to_fit_width(5)
         grid.move_to(ORIGIN)
 
         self.play(
@@ -509,8 +490,8 @@ class AgentEvaluation(Scene):
         )
 
         # Label
-        desc = Text("multi-hop reasoning", font_size=11, color=DIM)
-        desc.move_to(card.get_bottom() + UP * 0.35)
+        desc = Text("multi-hop reasoning", font_size=16, color=DIM)
+        desc.move_to(card.get_bottom() + DOWN * 0.35)
 
         # Info dots traveling the path
         dot_a = Dot(doc_a.get_right(), radius=0.05, color=GOLD, fill_opacity=0.8)
@@ -582,7 +563,9 @@ class AgentEvaluation(Scene):
             stars = VGroup()
             n_stars = [2, 4, 3][i]
             for s in range(n_stars):
-                star = Dot(radius=0.025, color=GOLD if i == 1 else DIM, fill_opacity=0.6)
+                star = Dot(
+                    radius=0.025, color=GOLD if i == 1 else DIM, fill_opacity=0.6
+                )
                 stars.add(star)
             stars.arrange(RIGHT, buff=0.04)
             stars.move_to(prod_box.get_bottom() + UP * 0.12)
@@ -607,8 +590,8 @@ class AgentEvaluation(Scene):
             max_tip_length_to_length_ratio=0.2,
         )
 
-        desc = Text("e-commerce agent", font_size=11, color=DIM)
-        desc.move_to(card.get_bottom() + UP * 0.35)
+        desc = Text("e-commerce agent", font_size=16, color=DIM)
+        desc.move_to(card.get_bottom() + DOWN * 0.35)
 
         illustration = VGroup(browser, products, hand, sel_arrow, desc)
 
@@ -649,7 +632,7 @@ class AgentEvaluation(Scene):
 
         # Robot icon in center
         robot = make_svg_icon("robot.svg", color=WHITE, height=0.6)
-        robot.move_to(card.get_center() + UP * 0.05)
+        robot.move_to(card.get_center() + DOWN * 0.2)
 
         # Tool icons orbiting
         tool_configs = [
@@ -664,8 +647,10 @@ class AgentEvaluation(Scene):
         tool_radius = 0.85
         for fname, clr, angle in tool_configs:
             icon = make_svg_icon(fname, color=clr, height=0.3)
-            pos = card.get_center() + UP * 0.05 + tool_radius * np.array(
-                [np.cos(angle), np.sin(angle), 0]
+            pos = (
+                robot.get_center()
+                + UP * 0.05
+                + tool_radius * np.array([np.cos(angle), np.sin(angle), 0])
             )
             icon.move_to(pos)
             tool_icons.add(icon)
@@ -673,15 +658,16 @@ class AgentEvaluation(Scene):
         # Arrow from robot to the highlighted tool (gear — the correct one)
         correct_arrow = Arrow(
             robot.get_center() + 0.3 * np.array([np.cos(PI / 2), np.sin(PI / 2), 0]),
-            tool_icons[0].get_center() - 0.15 * np.array([np.cos(PI / 2), np.sin(PI / 2), 0]),
+            tool_icons[0].get_center()
+            - 0.15 * np.array([np.cos(PI / 2), np.sin(PI / 2), 0]),
             buff=0,
             color=TEAL,
             stroke_width=2,
             max_tip_length_to_length_ratio=0.2,
         )
 
-        desc = Text("tool selection", font_size=11, color=DIM)
-        desc.move_to(card.get_bottom() + UP * 0.35)
+        desc = Text("tool selection", font_size=16, color=DIM)
+        desc.move_to(card.get_bottom() + DOWN * 0.35)
 
         illustration = VGroup(robot, tool_icons, correct_arrow, desc)
 
@@ -744,7 +730,9 @@ class AgentEvaluation(Scene):
         doc_bg.move_to(card.get_center() + UP * 0.05)
 
         # Code lines
-        code_lines = make_code_lines(doc_bg.get_center(), n_lines=5, max_width=1.4, color=DIM)
+        code_lines = make_code_lines(
+            doc_bg.get_center(), n_lines=5, max_width=1.4, color=DIM
+        )
 
         # Bug dot (red) on third line
         bug_dot = Dot(
@@ -761,8 +749,8 @@ class AgentEvaluation(Scene):
         fix_gear.move_to(doc_bg.get_corner(DR) + UL * 0.25)
         fix_gear.set_opacity(0)
 
-        desc = Text("code repair", font_size=11, color=DIM)
-        desc.move_to(card.get_bottom() + UP * 0.35)
+        desc = Text("code repair", font_size=16, color=DIM)
+        desc.move_to(card.get_bottom() + DOWN * 0.35)
 
         illustration = VGroup(doc_bg, code_lines, bug_dot, bug_label, fix_gear, desc)
 
@@ -781,7 +769,13 @@ class AgentEvaluation(Scene):
         self.play(
             FadeIn(bug_dot, scale=1.5),
             FadeIn(bug_label),
-            Flash(bug_dot.get_center(), color=RED, flash_radius=0.2, num_lines=6, line_length=0.06),
+            Flash(
+                bug_dot.get_center(),
+                color=RED,
+                flash_radius=0.2,
+                num_lines=6,
+                line_length=0.06,
+            ),
             run_time=0.4,
         )
         self.wait(1.0)
@@ -806,7 +800,13 @@ class AgentEvaluation(Scene):
         self.play(
             ReplacementTransform(bug_dot, fixed_dot),
             ReplacementTransform(bug_label, fixed_label),
-            Flash(fixed_dot.get_center(), color=GREEN, flash_radius=0.2, num_lines=6, line_length=0.06),
+            Flash(
+                fixed_dot.get_center(),
+                color=GREEN,
+                flash_radius=0.2,
+                num_lines=6,
+                line_length=0.06,
+            ),
             run_time=0.4,
         )
 
@@ -833,7 +833,9 @@ class AgentEvaluation(Scene):
 
         for card, color in zip(cards, pulse_colors):
             # Get the outer card rectangle (first submobject's first submobject)
-            card_rect = card[0][0]  # VGroup(card, illustration) -> card -> RoundedRectangle
+            card_rect = card[0][
+                0
+            ]  # VGroup(card, illustration) -> card -> RoundedRectangle
             glow = SurroundingRectangle(
                 card,
                 color=color,

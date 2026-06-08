@@ -66,9 +66,7 @@ class RNNDeepDive(Scene):
 
         # Input tokens on the left
         tokens_in = ["The", "capital", "of", "France", "is"]
-        tok_mobs = VGroup(
-            *[Text(t, font_size=22, color=WHITE) for t in tokens_in]
-        )
+        tok_mobs = VGroup(*[Text(t, font_size=22, color=WHITE) for t in tokens_in])
         tok_mobs.arrange(DOWN, buff=0.25)
         tok_mobs.move_to(LEFT * 3.5)
 
@@ -244,9 +242,7 @@ class RNNDeepDive(Scene):
 
         # Split into subword pieces
         pieces = ["un", "happi", "ness"]
-        piece_mobs = VGroup(
-            *[Text(p, font_size=28, color=GOLD) for p in pieces]
-        )
+        piece_mobs = VGroup(*[Text(p, font_size=28, color=GOLD) for p in pieces])
         piece_mobs.arrange(RIGHT, buff=0.5)
         piece_mobs.move_to(DOWN * 0.3)
 
@@ -440,18 +436,17 @@ class RNNDeepDive(Scene):
         # ================================================================
 
         # Left: human head metaphor
-        head = Circle(
-            radius=0.7,
-            color=WHITE,
-            stroke_width=2,
-            fill_color="#111111",
-            fill_opacity=1,
-        )
-        head.move_to(LEFT * 3.0 + UP * 0.3)
+        head = SVGMobject(str(BASE_DIR / "assets" / "svgs" / "brain.svg"))
 
+        head.set_color(WHITE)
+        head.set_stroke(WHITE, width=3, opacity=1)
+        head.set_fill(WHITE, opacity=0)  # keep line-art SVG unfilled
+        head.set_width(1.4)
+        head.move_to(LEFT * 3.0 + UP * 0.3)
+        self.add(head)
         # Thought bubble (three circles)
         b1 = Circle(radius=0.08, color=DIM, stroke_width=1, fill_opacity=0)
-        b1.next_to(head, UR, buff=0.1)
+        b1.next_to(head, UR, buff=0.05)
         b2 = Circle(radius=0.12, color=DIM, stroke_width=1, fill_opacity=0)
         b2.next_to(b1, UR, buff=0.08)
         thought = RoundedRectangle(
@@ -505,9 +500,7 @@ class RNNDeepDive(Scene):
         divider = Line(UP * 2.0, DOWN * 1.5, color=DIM2, stroke_width=0.8)
 
         # Title
-        mem_title = Text(
-            "compressed memory", font_size=22, color=WHITE
-        )
+        mem_title = Text("compressed memory", font_size=22, color=WHITE)
         mem_title.to_edge(UP, buff=0.5)
 
         self.play(Write(mem_title), run_time=0.5)
@@ -549,107 +542,159 @@ class RNNDeepDive(Scene):
         #  PART 6 — FORGETTING: signal fades through the chain
         # ================================================================
 
-        fade_title = Text("the forgetting problem", font_size=22, color=RED)
-        fade_title.to_edge(UP, buff=0.4)
+        fade_title = Tex(
+            r"the forgetting problem",
+            font_size=32,
+            color=RED,
+        )
+        fade_title.to_edge(UP, buff=0.45)
+
         self.play(Write(fade_title), run_time=0.5)
 
-        # Rebuild unrolled RNN chain (compact)
+        # ------------------------------------------------
+        # Build unrolled RNN chain
+        # ------------------------------------------------
+
         n_fade = 7
-        f_cell_w = 0.7
-        f_cell_gap = 1.1
-        f_start_x = -(n_fade - 1) * f_cell_gap / 2
+        f_cell_w = 0.75
+        f_cell_h = 0.52
+        f_cell_gap = 1.15
+
+        fade_tokens = [r"t_1", r"t_2", r"t_3", r"t_4", r"t_5", r"t_6", r"t_7"]
 
         f_cells = VGroup()
-        f_h_arrows = VGroup()
         f_labels = VGroup()
 
-        fade_tokens = ["t₁", "t₂", "t₃", "t₄", "t₅", "t₆", "t₇"]
-
+        # Create cells first
         for i in range(n_fade):
-            cx = f_start_x + i * f_cell_gap
             cell = RoundedRectangle(
                 width=f_cell_w,
-                height=0.55,
+                height=f_cell_h,
                 corner_radius=0.08,
                 color=ACCENT,
                 stroke_width=1.5,
                 fill_color="#0A1A2A",
                 fill_opacity=1,
             )
-            cell.move_to(RIGHT * cx)
+
+            x = (i - (n_fade - 1) / 2) * f_cell_gap
+            cell.move_to(RIGHT * x + DOWN * 0.1)
+
+            label = MathTex(
+                fade_tokens[i],
+                font_size=18,
+                color=WHITE,
+            )
+            label.next_to(cell, DOWN, buff=0.12)
+
             f_cells.add(cell)
+            f_labels.add(label)
 
-            lb = Text(fade_tokens[i], font_size=13, color=WHITE)
-            lb.next_to(cell, DOWN, buff=0.12)
-            f_labels.add(lb)
+        # Create arrows AFTER cells are already positioned
+        f_h_arrows = VGroup()
 
-            if i < n_fade - 1:
-                nx = f_start_x + (i + 1) * f_cell_gap
-                arr = Arrow(
-                    RIGHT * cx + RIGHT * f_cell_w / 2,
-                    RIGHT * nx + LEFT * f_cell_w / 2,
-                    buff=0.06,
-                    color=GOLD,
-                    stroke_width=1.5,
-                    max_tip_length_to_length_ratio=0.2,
-                )
-                f_h_arrows.add(arr)
+        for i in range(n_fade - 1):
+            arr = Arrow(
+                f_cells[i].get_right(),
+                f_cells[i + 1].get_left(),
+                buff=0.08,
+                color=GOLD,
+                stroke_width=2,
+                max_tip_length_to_length_ratio=0.18,
+            )
+
+            # Explicitly center arrow vertically with the cells
+            arr.set_y(f_cells[i].get_y())
+
+            f_h_arrows.add(arr)
 
         chain_grp = VGroup(f_cells, f_h_arrows, f_labels)
-        chain_grp.move_to(ORIGIN)
+        chain_grp.move_to(ORIGIN + DOWN * 0.1)
 
         self.play(
             FadeIn(f_cells),
             FadeIn(f_labels),
-            LaggedStart(*[GrowArrow(a) for a in f_h_arrows], lag_ratio=0.05),
+            LaggedStart(
+                *[GrowArrow(a) for a in f_h_arrows],
+                lag_ratio=0.05,
+            ),
             run_time=0.8,
         )
+
         # [10:44] But there is a catch — these models can forget
         self.wait(3.0)
 
-        # Highlight first token in GOLD, then watch it fade through cells
-        glow = f_cells[0].copy().set_stroke(GOLD, width=3).set_fill(GOLD, opacity=0.3)
+        # ------------------------------------------------
+        # Highlight first token, then fade through chain
+        # ------------------------------------------------
+
+        glow = f_cells[0].copy().set_stroke(GOLD, width=3).set_fill(GOLD, opacity=0.28)
+
         self.play(FadeIn(glow), run_time=0.3)
 
-        # Create fading trail — each subsequent cell gets dimmer
-        fade_glows = []
-        for i in range(1, n_fade):
-            opacity = max(0.3 - i * 0.04, 0.02)
-            fg = f_cells[i].copy().set_stroke(GOLD, width=max(3 - i * 0.4, 0.5)).set_fill(
-                GOLD, opacity=opacity
-            )
-            fade_glows.append(fg)
+        fade_glows = VGroup()
 
-        for i, fg in enumerate(fade_glows):
+        for i in range(1, n_fade):
+            opacity = max(0.28 - i * 0.04, 0.03)
+            stroke_w = max(3 - i * 0.35, 0.8)
+
+            fg = (
+                f_cells[i]
+                .copy()
+                .set_stroke(GOLD, width=stroke_w)
+                .set_fill(GOLD, opacity=opacity)
+            )
+
+            fade_glows.add(fg)
+
+        for fg in fade_glows:
             self.play(FadeIn(fg), run_time=0.25)
 
         # [10:56] Earlier information has to survive through many updates
         self.wait(5.0)
 
-        # "information fades" label
-        info_fade = Text("early information fades away", font_size=18, color=RED)
-        info_fade.next_to(chain_grp, DOWN, buff=0.7)
+        # ------------------------------------------------
+        # Information fades label + decay arrow
+        # ------------------------------------------------
 
-        # Gradient arrow showing decay
+        info_fade = Tex(
+            r"early information fades away",
+            font_size=28,
+            color=RED,
+        )
+        info_fade.next_to(chain_grp, DOWN, buff=0.65)
+
         decay_arrow = Arrow(
-            f_cells[0].get_bottom() + DOWN * 0.35,
-            f_cells[-1].get_bottom() + DOWN * 0.35,
+            f_cells[0].get_bottom() + DOWN * 0.42,
+            f_cells[-1].get_bottom() + DOWN * 0.42,
             buff=0,
             color=RED,
-            stroke_width=1.5,
-            max_tip_length_to_length_ratio=0.1,
+            stroke_width=2,
+            max_tip_length_to_length_ratio=0.08,
         )
 
         self.play(
-            FadeIn(info_fade, scale=1.1),
+            FadeIn(info_fade, scale=1.05),
             GrowArrow(decay_arrow),
             run_time=0.6,
         )
+
         # [11:05] Important details from the beginning slowly fade away
         self.wait(15.0)
 
-        self.play(*[FadeOut(m) for m in self.mobjects + [glow] + fade_glows], run_time=0.6)
+        # ------------------------------------------------
+        # Clean up
+        # ------------------------------------------------
 
+        self.play(
+            FadeOut(fade_title),
+            FadeOut(chain_grp),
+            FadeOut(glow),
+            FadeOut(fade_glows),
+            FadeOut(info_fade),
+            FadeOut(decay_arrow),
+            run_time=0.6,
+        )
         # ================================================================
         #  PART 7 — HIDDEN STATE SIZE: fixed capacity
         # ================================================================
@@ -663,9 +708,12 @@ class RNNDeepDive(Scene):
         small_bar = VGroup()
         for j in range(4):
             r = Rectangle(
-                width=0.6, height=0.25,
-                color=GOLD, stroke_width=1,
-                fill_color=GOLD, fill_opacity=0.4,
+                width=0.6,
+                height=0.25,
+                color=GOLD,
+                stroke_width=1,
+                fill_color=GOLD,
+                fill_opacity=0.4,
             )
             small_bar.add(r)
         small_bar.arrange(DOWN, buff=0.02)
@@ -677,9 +725,12 @@ class RNNDeepDive(Scene):
         large_bar = VGroup()
         for j in range(10):
             r = Rectangle(
-                width=0.6, height=0.25,
-                color=ACCENT, stroke_width=1,
-                fill_color=ACCENT, fill_opacity=0.4,
+                width=0.6,
+                height=0.25,
+                color=ACCENT,
+                stroke_width=1,
+                fill_color=ACCENT,
+                fill_opacity=0.4,
             )
             large_bar.add(r)
         large_bar.arrange(DOWN, buff=0.02)
@@ -687,12 +738,16 @@ class RNNDeepDive(Scene):
         large_label.next_to(large_bar, DOWN, buff=0.3)
 
         self.play(
-            LaggedStart(*[FadeIn(r, shift=UP * 0.05) for r in small_bar], lag_ratio=0.05),
+            LaggedStart(
+                *[FadeIn(r, shift=UP * 0.05) for r in small_bar], lag_ratio=0.05
+            ),
             FadeIn(small_label),
             run_time=0.6,
         )
         self.play(
-            LaggedStart(*[FadeIn(r, shift=UP * 0.05) for r in large_bar], lag_ratio=0.03),
+            LaggedStart(
+                *[FadeIn(r, shift=UP * 0.05) for r in large_bar], lag_ratio=0.03
+            ),
             FadeIn(large_label),
             run_time=0.6,
         )
@@ -709,8 +764,10 @@ class RNNDeepDive(Scene):
         fixed_l.next_to(brace_l, RIGHT, buff=0.1)
 
         self.play(
-            GrowFromCenter(brace_s), FadeIn(fixed_s),
-            GrowFromCenter(brace_l), FadeIn(fixed_l),
+            GrowFromCenter(brace_s),
+            FadeIn(fixed_s),
+            GrowFromCenter(brace_l),
+            FadeIn(fixed_l),
             run_time=0.6,
         )
         # [11:25] A larger hidden state gives more space
@@ -745,24 +802,34 @@ class RNNDeepDive(Scene):
         for i in range(n_short):
             cx = s_cx_start + i * 1.1
             cell = RoundedRectangle(
-                width=0.65, height=0.45, corner_radius=0.07,
-                color=GREEN, stroke_width=1.5,
-                fill_color="#0A2A0A", fill_opacity=1,
+                width=0.65,
+                height=0.45,
+                corner_radius=0.07,
+                color=GREEN,
+                stroke_width=1.5,
+                fill_color="#0A2A0A",
+                fill_opacity=1,
             )
             cell.move_to(RIGHT * cx + UP * 1.5)
             s_cells.add(cell)
             if i < n_short - 1:
                 arr = Arrow(
-                    cell.get_right(), cell.get_right() + RIGHT * 0.45,
-                    buff=0.06, color=GOLD, stroke_width=1.5,
+                    cell.get_right(),
+                    cell.get_right() + RIGHT * 0.45,
+                    buff=0.06,
+                    color=GOLD,
+                    stroke_width=1.5,
                     max_tip_length_to_length_ratio=0.25,
                 )
                 s_arrows.add(arr)
 
         # Prediction: check mark
         s_pred = Arrow(
-            s_cells[-1].get_right(), s_cells[-1].get_right() + RIGHT * 0.8,
-            buff=0.06, color=GREEN, stroke_width=2,
+            s_cells[-1].get_right(),
+            s_cells[-1].get_right() + RIGHT * 0.8,
+            buff=0.06,
+            color=GREEN,
+            stroke_width=2,
             max_tip_length_to_length_ratio=0.2,
         )
         check = Text("✓", font_size=24, color=GREEN)
@@ -792,24 +859,34 @@ class RNNDeepDive(Scene):
             # Cells get progressively dimmer
             opacity = max(0.8 - i * 0.08, 0.2)
             cell = RoundedRectangle(
-                width=0.45, height=0.35, corner_radius=0.06,
-                color=ACCENT, stroke_width=1.0,
-                fill_color="#0A1A2A", fill_opacity=opacity,
+                width=0.45,
+                height=0.35,
+                corner_radius=0.06,
+                color=ACCENT,
+                stroke_width=1.0,
+                fill_color="#0A1A2A",
+                fill_opacity=opacity,
             )
             cell.move_to(RIGHT * cx + UP * 1.5)
             l_cells.add(cell)
             if i < n_long - 1:
                 arr = Arrow(
-                    cell.get_right(), cell.get_right() + RIGHT * 0.3,
-                    buff=0.04, color=GOLD, stroke_width=1,
+                    cell.get_right(),
+                    cell.get_right() + RIGHT * 0.3,
+                    buff=0.04,
+                    color=GOLD,
+                    stroke_width=1,
                     max_tip_length_to_length_ratio=0.3,
                 )
                 l_arrows.add(arr)
 
         # Prediction: question mark
         l_pred = Arrow(
-            l_cells[-1].get_right(), l_cells[-1].get_right() + RIGHT * 0.6,
-            buff=0.06, color=RED, stroke_width=2,
+            l_cells[-1].get_right(),
+            l_cells[-1].get_right() + RIGHT * 0.6,
+            buff=0.06,
+            color=RED,
+            stroke_width=2,
             max_tip_length_to_length_ratio=0.2,
         )
         q_mark = Text("?", font_size=24, color=RED)
@@ -846,9 +923,13 @@ class RNNDeepDive(Scene):
 
         # Single LSTM cell (detailed view)
         lstm_box = RoundedRectangle(
-            width=3.0, height=2.2, corner_radius=0.15,
-            color=ACCENT, stroke_width=2,
-            fill_color="#0A1A2A", fill_opacity=1,
+            width=3.0,
+            height=2.2,
+            corner_radius=0.15,
+            color=ACCENT,
+            stroke_width=2,
+            fill_color="#0A1A2A",
+            fill_opacity=1,
         )
         lstm_box.move_to(UP * 0.2)
 
@@ -860,11 +941,17 @@ class RNNDeepDive(Scene):
 
         for i, (gc, gn) in enumerate(zip(gate_colors, gate_names)):
             gate = RoundedRectangle(
-                width=0.65, height=0.45, corner_radius=0.06,
-                color=gc, stroke_width=2,
-                fill_color=gc, fill_opacity=0.15,
+                width=0.65,
+                height=0.45,
+                corner_radius=0.06,
+                color=gc,
+                stroke_width=2,
+                fill_color=gc,
+                fill_opacity=0.15,
             )
-            gate.move_to(lstm_box.get_center() + LEFT * 0.85 + RIGHT * i * 0.85 + UP * 0.15)
+            gate.move_to(
+                lstm_box.get_center() + LEFT * 0.85 + RIGHT * i * 0.85 + UP * 0.15
+            )
             gates.add(gate)
 
             gl = Text(gn, font_size=10, color=gc)
@@ -927,9 +1014,13 @@ class RNNDeepDive(Scene):
         for i in range(n_lstm):
             cx = chain_start_x + i * 1.3
             cell = RoundedRectangle(
-                width=0.8, height=0.55, corner_radius=0.08,
-                color=ACCENT, stroke_width=1.5,
-                fill_color="#0A1A2A", fill_opacity=1,
+                width=0.8,
+                height=0.55,
+                corner_radius=0.08,
+                color=ACCENT,
+                stroke_width=1.5,
+                fill_color="#0A1A2A",
+                fill_opacity=1,
             )
             cell.move_to(RIGHT * cx + DOWN * 0.5)
 
@@ -946,7 +1037,9 @@ class RNNDeepDive(Scene):
                 arr = Arrow(
                     RIGHT * cx + RIGHT * 0.4,
                     RIGHT * nx + LEFT * 0.4,
-                    buff=0.06, color=GOLD, stroke_width=1.5,
+                    buff=0.06,
+                    color=GOLD,
+                    stroke_width=1.5,
                     max_tip_length_to_length_ratio=0.2,
                 )
                 lstm_chain_arrows.add(arr)
@@ -977,7 +1070,9 @@ class RNNDeepDive(Scene):
             VGroup(lstm_cells_chain, lstm_chain_arrows), DOWN, color=DIM
         )
         chain_brace.next_to(chain_label, DOWN, buff=0.2)
-        brace_label = Text("better memory, but still step-by-step", font_size=14, color=DIM)
+        brace_label = Text(
+            "better memory, but still step-by-step", font_size=14, color=DIM
+        )
         brace_label.next_to(chain_brace, DOWN, buff=0.1)
 
         self.play(
@@ -994,7 +1089,9 @@ class RNNDeepDive(Scene):
         #  PART 10 — INFORMATION TRAVELS STEP BY STEP
         # ================================================================
 
-        step_title = Text("information must travel through every step", font_size=20, color=WHITE)
+        step_title = Text(
+            "information must travel through every step", font_size=20, color=WHITE
+        )
         step_title.to_edge(UP, buff=0.4)
         self.play(Write(step_title), run_time=0.6)
 
@@ -1007,9 +1104,13 @@ class RNNDeepDive(Scene):
         for i in range(n_steps):
             cx = step_start + i * 0.95
             cell = RoundedRectangle(
-                width=0.55, height=0.4, corner_radius=0.06,
-                color=DIM, stroke_width=1.5,
-                fill_color="#111111", fill_opacity=1,
+                width=0.55,
+                height=0.4,
+                corner_radius=0.06,
+                color=DIM,
+                stroke_width=1.5,
+                fill_color="#111111",
+                fill_opacity=1,
             )
             cell.move_to(RIGHT * cx)
             step_cells.add(cell)
@@ -1019,19 +1120,29 @@ class RNNDeepDive(Scene):
                 arr = Arrow(
                     RIGHT * cx + RIGHT * 0.275,
                     RIGHT * nx + LEFT * 0.275,
-                    buff=0.04, color=DIM2, stroke_width=1.2,
+                    buff=0.04,
+                    color=DIM2,
+                    stroke_width=1.2,
                     max_tip_length_to_length_ratio=0.25,
                 )
                 step_arrows.add(arr)
 
         self.play(
-            FadeIn(step_cells), FadeIn(step_arrows),
+            FadeIn(step_cells),
+            FadeIn(step_arrows),
             run_time=0.6,
         )
 
         # Highlight first cell (source) and last cell (destination)
-        source_glow = step_cells[0].copy().set_stroke(GOLD, width=3).set_fill(GOLD, opacity=0.3)
-        dest_glow = step_cells[-1].copy().set_stroke(ACCENT, width=3).set_fill(ACCENT, opacity=0.2)
+        source_glow = (
+            step_cells[0].copy().set_stroke(GOLD, width=3).set_fill(GOLD, opacity=0.3)
+        )
+        dest_glow = (
+            step_cells[-1]
+            .copy()
+            .set_stroke(ACCENT, width=3)
+            .set_fill(ACCENT, opacity=0.2)
+        )
 
         src_label = MathTex(r"t_1", font_size=18, color=GOLD)
         src_label.next_to(step_cells[0], DOWN, buff=0.2)
@@ -1039,8 +1150,10 @@ class RNNDeepDive(Scene):
         dst_label.next_to(step_cells[-1], DOWN, buff=0.2)
 
         self.play(
-            FadeIn(source_glow), FadeIn(dest_glow),
-            FadeIn(src_label), FadeIn(dst_label),
+            FadeIn(source_glow),
+            FadeIn(dest_glow),
+            FadeIn(src_label),
+            FadeIn(dst_label),
             run_time=0.4,
         )
 
@@ -1054,7 +1167,9 @@ class RNNDeepDive(Scene):
             # Fade the signal as it travels
             new_opacity = max(1.0 - (i + 1) * 0.12, 0.15)
             self.play(
-                signal.animate.move_to(step_cells[i + 1].get_center()).set_opacity(new_opacity),
+                signal.animate.move_to(step_cells[i + 1].get_center()).set_opacity(
+                    new_opacity
+                ),
                 run_time=0.3,
             )
 
@@ -1123,11 +1238,13 @@ class RNNDeepDive(Scene):
 
         for i in range(n_nodes):
             angle = i * TAU / n_nodes - PI / 2
-            pos = np.array([
-                node_radius * np.cos(angle),
-                node_radius * np.sin(angle),
-                0,
-            ])
+            pos = np.array(
+                [
+                    node_radius * np.cos(angle),
+                    node_radius * np.sin(angle),
+                    0,
+                ]
+            )
             pos += DOWN * 0.5  # shift the whole graph down
 
             node = Dot(radius=0.12, color=ACCENT, fill_opacity=0.8)
@@ -1216,11 +1333,16 @@ class RNNDeepDive(Scene):
 
         for i in range(n_nodes):
             angle = i * TAU / n_nodes - PI / 2
-            pos = np.array([
-                1.2 * np.cos(angle),
-                1.2 * np.sin(angle),
-                0,
-            ]) + UP * 0.8
+            pos = (
+                np.array(
+                    [
+                        1.2 * np.cos(angle),
+                        1.2 * np.sin(angle),
+                        0,
+                    ]
+                )
+                + UP * 0.8
+            )
 
             node = Dot(radius=0.06, color=ACCENT, fill_opacity=0.4)
             node.move_to(pos)

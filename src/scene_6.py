@@ -12,7 +12,7 @@ else:
 
 
 WHITE = "#F5F5F5"
-BG = "#0D0D0D"
+BG = "#000000"
 ACCENT = "#4FC3F7"
 GOLD = "#FFD54F"
 GREEN = "#66BB6A"
@@ -189,7 +189,9 @@ def make_compute_icon():
             color=DIM,
             stroke_width=1.0,
         ),
-        Line(core.get_left(), chip.get_left() + RIGHT * 0.18, color=DIM, stroke_width=1.0),
+        Line(
+            core.get_left(), chip.get_left() + RIGHT * 0.18, color=DIM, stroke_width=1.0
+        ),
         Line(
             core.get_right(),
             chip.get_right() + LEFT * 0.18,
@@ -216,7 +218,7 @@ def make_factor_panels():
         icon = make_factor_icon(factor.symbol)
         symbol = MathTex(factor.symbol, font_size=34, color=factor.color)
         label = Text(factor.label, font_size=15, color=DIM)
-        panel = VGroup(icon, symbol, label).arrange(DOWN, buff=0.16)
+        panel = VGroup(icon, symbol, label).arrange(DOWN, buff=0.24)
         panels.add(panel)
 
     panels.arrange(RIGHT, buff=1.1)
@@ -313,7 +315,9 @@ def make_loss_graph():
     ).arrange(RIGHT, buff=0.14)
     lower_loss.next_to(dots[-1], UP, buff=0.18)
 
-    graph = VGroup(x_axis, y_axis, scale_label, loss_label, guides, curve, dots, lower_loss)
+    graph = VGroup(
+        x_axis, y_axis, scale_label, loss_label, guides, curve, dots, lower_loss
+    )
     return graph
 
 
@@ -328,7 +332,11 @@ class ScalingLaws(Scene):
         transformer_label.next_to(transformer, DOWN, buff=0.18)
         transformer_group = VGroup(transformer, transformer_label)
 
-        self.play(FadeIn(web[1]), LaggedStart(*[Create(e) for e in web[0]], lag_ratio=0.01), run_time=1.0)
+        self.play(
+            FadeIn(web[1]),
+            LaggedStart(*[Create(e) for e in web[0]], lag_ratio=0.01),
+            run_time=1.0,
+        )
         # [16:06] But what happens when we make these Transformers bigger?
         self.wait(2.0)
         self.play(ReplacementTransform(web, transformer_group), run_time=0.8)
@@ -342,7 +350,9 @@ class ScalingLaws(Scene):
         scale_stack.set_stroke(WHITE, width=1.2)
 
         self.play(
-            transformer_group.animate.scale(0.55).to_edge(UP, buff=0.45).set_opacity(0.45),
+            transformer_group.animate.scale(0.55)
+            .to_edge(UP, buff=0.45)
+            .set_opacity(0.45),
             run_time=0.6,
         )
         self.play(
@@ -355,7 +365,13 @@ class ScalingLaws(Scene):
             run_time=1.2,
         )
         self.play(
-            Flash(large.get_center(), color=WHITE, flash_radius=0.8, line_length=0.16, num_lines=10),
+            Flash(
+                large.get_center(),
+                color=WHITE,
+                flash_radius=0.8,
+                line_length=0.16,
+                num_lines=10,
+            ),
             run_time=0.45,
         )
         # [16:16] Researchers discovered: bigger models don't just get better slowly
@@ -417,13 +433,14 @@ class ScalingLaws(Scene):
         equation_block.move_to(DOWN * 1.05)
 
         self.play(
-            panels.animate.scale(0.78).to_edge(UP, buff=0.45),
-            factor_glows.animate.scale(0.78).to_edge(UP, buff=0.45),
+            VGroup(panels, factor_glows).animate.scale(0.78).to_edge(UP, buff=0.45),
             run_time=0.6,
         )
         for row in equation_block[1]:
             self.play(Write(row[0]), FadeIn(row[1], shift=UP * 0.04), run_time=0.65)
-        self.play(GrowFromCenter(equation_block[0]), FadeIn(equation_block[2]), run_time=0.45)
+        self.play(
+            GrowFromCenter(equation_block[0]), FadeIn(equation_block[2]), run_time=0.45
+        )
         # [16:38] Each one follows a power-law relationship
         self.wait(4.0)
 
@@ -440,15 +457,28 @@ class ScalingLaws(Scene):
 
         self.play(
             FadeOut(equation_block),
-            ReplacementTransform(VGroup(*[panel[0].copy() for panel in panels]), compact_factors),
+            ReplacementTransform(
+                VGroup(*[panel[0].copy() for panel in panels]), compact_factors
+            ),
             FadeOut(VGroup(*[panel[1:] for panel in panels])),
-            FadeOut(factor_glows),
+            FadeOut(VGroup(panels, factor_glows)),
             run_time=0.7,
         )
-        self.play(Create(graph[0]), Create(graph[1]), FadeIn(graph[2]), FadeIn(graph[3]), run_time=0.55)
-        self.play(LaggedStart(*[Create(g) for g in graph[4]], lag_ratio=0.04), run_time=0.5)
+        self.play(
+            Create(graph[0]),
+            Create(graph[1]),
+            FadeIn(graph[2]),
+            FadeIn(graph[3]),
+            run_time=0.55,
+        )
+        self.play(
+            LaggedStart(*[Create(g) for g in graph[4]], lag_ratio=0.04), run_time=0.5
+        )
         self.play(Create(graph[5]), run_time=1.4)
-        self.play(LaggedStart(*[FadeIn(dot, scale=0.6) for dot in graph[6]], lag_ratio=0.07), run_time=0.6)
+        self.play(
+            LaggedStart(*[FadeIn(dot, scale=0.6) for dot in graph[6]], lag_ratio=0.07),
+            run_time=0.6,
+        )
         self.play(FadeIn(graph[7], shift=UP * 0.08), run_time=0.45)
 
         arrows = VGroup()
@@ -463,9 +493,17 @@ class ScalingLaws(Scene):
                 )
             )
 
-        self.play(LaggedStart(*[Create(a) for a in arrows], lag_ratio=0.1), run_time=0.7)
         self.play(
-            Flash(graph[5].point_from_proportion(0.76), color=GOLD, flash_radius=0.45, line_length=0.12, num_lines=8),
+            LaggedStart(*[Create(a) for a in arrows], lag_ratio=0.1), run_time=0.7
+        )
+        self.play(
+            Flash(
+                graph[5].point_from_proportion(0.76),
+                color=GOLD,
+                flash_radius=0.45,
+                line_length=0.12,
+                num_lines=8,
+            ),
             run_time=0.5,
         )
         # [16:55] More scale, lower loss — a smooth, predictable curve

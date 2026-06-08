@@ -11,7 +11,7 @@ else:
 BASE_DIR = Path("/home/pineapple/Desktop/projects/manim-gaai/")
 
 WHITE = "#F5F5F5"
-BG = "#0D0D0D"
+BG = "#000000"
 ACCENT = "#4FC3F7"
 GOLD = "#FFD54F"
 DIM = "#8A7676"
@@ -130,16 +130,16 @@ class ThreeRolesToAgentLoop(Scene):
             Text("CREATIVE", font_size=18, color=PURPLE),
         )
         for label, icon in zip(labels, icons):
-            label.next_to(icon, DOWN, buff=0.35)
+            label.next_to(icon, DOWN, buff=0.5)
 
         # Subtle environment rings around each icon
         rings = VGroup()
         ring_colors = [ACCENT, GOLD, PURPLE]
         for icon, rc in zip(icons, ring_colors):
             ring = Circle(
-                radius=0.9,
+                radius=0.8,
                 color=rc,
-                stroke_width=1.0,
+                stroke_width=5.0,
                 stroke_opacity=0.3,
                 fill_opacity=0,
             )
@@ -484,8 +484,13 @@ class ThreeRolesToAgentLoop(Scene):
 
         # Dim the left side
         left_side = VGroup(
-            person_icon, chatbot_box, chat_icon,
-            send_arrow, reply_arrow, done_mark, chatbot_title,
+            person_icon,
+            chatbot_box,
+            chat_icon,
+            send_arrow,
+            reply_arrow,
+            done_mark,
+            chatbot_title,
         )
         self.play(left_side.animate.set_opacity(0.35), run_time=0.4)
 
@@ -619,20 +624,18 @@ class ThreeRolesToAgentLoop(Scene):
         # ── Environment icons orbiting ──
         orbit_radius = 2.4
         env_configs = [
-            ("document.svg", ACCENT, PI / 2),         # top
-            ("calendar.svg", GOLD, PI / 6),            # upper right
-            ("browser.svg", TEAL, -PI / 6),            # lower right
-            ("database.svg", PURPLE, -PI / 2),         # bottom
-            ("email.svg", ORANGE, -5 * PI / 6),        # lower left
-            ("gear.svg", DIM, 5 * PI / 6),             # upper left
+            ("document.svg", ACCENT, PI / 2),  # top
+            ("calendar.svg", GOLD, PI / 6),  # upper right
+            ("browser.svg", TEAL, -PI / 6),  # lower right
+            ("database.svg", PURPLE, -PI / 2),  # bottom
+            ("email.svg", ORANGE, -5 * PI / 6),  # lower left
+            ("gear.svg", DIM, 5 * PI / 6),  # upper left
         ]
 
         env_icons = VGroup()
         for fname, clr, angle in env_configs:
             icon = make_svg_icon(fname, color=clr, height=0.55)
-            pos = ORIGIN + orbit_radius * np.array(
-                [np.cos(angle), np.sin(angle), 0]
-            )
+            pos = ORIGIN + orbit_radius * np.array([np.cos(angle), np.sin(angle), 0])
             icon.move_to(pos)
             env_icons.add(icon)
 
@@ -659,9 +662,16 @@ class ThreeRolesToAgentLoop(Scene):
         # ── Show a single act-observe cycle ──
         # Arrow from LLM → calendar (act)
         target_icon = env_icons[1]  # calendar
+
         act_arrow = Arrow(
-            llm_hex.get_center() + 0.5 * (target_icon.get_center() - llm_hex.get_center()).astype(float) / np.linalg.norm(target_icon.get_center() - llm_hex.get_center()),
-            target_icon.get_center() - 0.3 * (target_icon.get_center() - llm_hex.get_center()).astype(float) / np.linalg.norm(target_icon.get_center() - llm_hex.get_center()),
+            llm_hex.get_center()
+            + 0.5
+            * (target_icon.get_center() - llm_hex.get_center()).astype(float)
+            / np.linalg.norm(target_icon.get_center() - llm_hex.get_center()),
+            target_icon.get_center()
+            - 0.3
+            * (target_icon.get_center() - llm_hex.get_center()).astype(float)
+            / np.linalg.norm(target_icon.get_center() - llm_hex.get_center()),
             buff=0,
             color=GOLD,
             stroke_width=2,
@@ -759,9 +769,9 @@ class ThreeRolesToAgentLoop(Scene):
         # Phase labels
         phase_labels = VGroup()
         phase_positions = [
-            (UP * 1.9, "act", GREEN),
+            (UP * 1.7, "act", GREEN),
             (RIGHT * 2.0, "observe", GOLD),
-            (DOWN * 1.9, "reason", ACCENT),
+            (DOWN * 1.7, "reason", ACCENT),
             (LEFT * 2.0, "act again", GREEN),
         ]
         for pos, txt, clr in phase_positions:
@@ -801,10 +811,20 @@ class ThreeRolesToAgentLoop(Scene):
 
         # Store everything for Scene 5 transition
         self._loop_diagram = VGroup(
-            llm_hex, llm_label, orbit_ring, env_icons,
-            loop_circle, tip_arrows,
+            llm_hex,
+            llm_label,
+            orbit_ring,
+            env_icons,
+            loop_circle,
+            tip_arrows,
         )
         self._loop_center = ORIGIN.copy()
+
+        self.play(
+            *[mob.animate.shift(DOWN * 0.5) for mob in self.mobjects],
+            run_time=0.8,
+            rate_func=smooth,
+        )
 
     # ==================================================================
     #  SCENE 5 — Closing
@@ -819,10 +839,10 @@ class ThreeRolesToAgentLoop(Scene):
         star_icon = make_svg_icon("star.svg", color=PURPLE, height=0.7)
 
         role_icons = VGroup(doc_icon, cal_icon, star_icon)
-        role_positions = [LEFT * 4.5 + UP * 2.0, UP * 3.0, RIGHT * 4.5 + UP * 2.0]
+        role_positions = [LEFT * 4.5 + UP * 2.0, UP * 3.5, RIGHT * 4.5 + UP * 2.0]
         for icon, pos in zip(role_icons, role_positions):
             icon.move_to(pos)
-            icon.set_opacity(0.25)
+            icon.set_opacity(0.75)
 
         role_labels = VGroup(
             Text("WORK", font_size=11, color=ACCENT),
@@ -831,7 +851,7 @@ class ThreeRolesToAgentLoop(Scene):
         )
         for label, icon in zip(role_labels, role_icons):
             label.next_to(icon, DOWN, buff=0.15)
-            label.set_opacity(0.25)
+            label.set_opacity(0.75)
 
         # Faint connection lines from each role icon to the loop
         conn_lines = VGroup()
@@ -840,8 +860,8 @@ class ThreeRolesToAgentLoop(Scene):
                 icon.get_center(),
                 self._loop_center,
                 color=DIM2,
-                stroke_width=0.6,
-                stroke_opacity=0.2,
+                stroke_width=8.0,
+                stroke_opacity=0.5,
                 dash_length=0.08,
             )
             conn_lines.add(line)

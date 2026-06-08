@@ -418,8 +418,8 @@ class ContextLength(Scene):
         # annotations
         w_ann = Text("next word", font_size=18, color=GOLD)
         h_ann = Text("context", font_size=18, color=ACCENT)
-        w_ann.next_to(formula[1], DOWN, buff=0.35)
-        h_ann.next_to(formula[3], DOWN, buff=0.35)
+        w_ann.next_to(formula[1], 0.5 * LEFT + DOWN, buff=0.75)
+        h_ann.next_to(formula[3], 0.5 * RIGHT + DOWN, buff=0.75)
 
         w_arrow = Arrow(
             w_ann.get_top(),
@@ -723,9 +723,9 @@ class ContextLength(Scene):
             width=5,
             height=0.45,
             color=WHITE,
-            fill_opacity=0.05,
-            stroke_width=1,
-        ).move_to(LEFT * 0.5 + DOWN * 0.5)
+            fill_opacity=0.00,
+            stroke_width=0,
+        ).move_to(DOWN * 0.5)
 
         ctx_bar = Rectangle(
             width=0.1,
@@ -747,9 +747,9 @@ class ContextLength(Scene):
             width=5,
             height=0.45,
             color=WHITE,
-            fill_opacity=0.05,
-            stroke_width=1,
-        ).move_to(LEFT * 0.5 + DOWN * 1.5)
+            fill_opacity=0.00,
+            stroke_width=0,
+        ).move_to(DOWN * 1.5)
 
         cost_bar = Rectangle(
             width=0.1,
@@ -806,7 +806,12 @@ class ContextLength(Scene):
         self.play(Write(question), run_time=1.0)
 
         self.play(
-            Flash(q_box, color=SEPIA, flash_radius=0.4, line_length=0.15, num_lines=8),
+            *[
+                Flash(
+                    corner, color=SEPIA, flash_radius=0.3, line_length=0.15, num_lines=6
+                )
+                for corner in q_box.get_vertices()
+            ],
             run_time=0.6,
         )
 

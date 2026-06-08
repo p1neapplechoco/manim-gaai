@@ -2,6 +2,8 @@ import sys
 import numpy as np
 from pathlib import Path
 
+from pyparsing import line_start
+
 CMD = Path(sys.argv[0]).name.lower()
 if "manimgl" in CMD:
     from manimlib import *
@@ -11,7 +13,7 @@ else:
 BASE_DIR = Path("/home/pineapple/Desktop/projects/manim-gaai/")
 
 WHITE = "#F5F5F5"
-BG = "#0D0D0D"
+BG = "#000000"
 ACCENT = "#4FC3F7"
 GOLD = "#FFD54F"
 DIM = "#8A7676"
@@ -141,7 +143,8 @@ class AgentArchitectures(Scene):
         line_end = RIGHT * 5.0
 
         spectrum_line = Arrow(
-            line_start, line_end,
+            line_start,
+            line_end,
             buff=0,
             color=DIM,
             stroke_width=1.8,
@@ -158,7 +161,7 @@ class AgentArchitectures(Scene):
         # Gradient dots along the line
         n_dots = 12
         dots = VGroup()
-        for i in range(n_dots):
+        for i in range(n_dots - 1):
             t = i / (n_dots - 1)
             x = line_start[0] + t * (line_end[0] - line_start[0])
             opacity = 0.15 + 0.6 * t
@@ -218,17 +221,25 @@ class AgentArchitectures(Scene):
         ]
 
         markers = VGroup()
+
         for label_text, color, t in milestones:
             x = line_start[0] + t * (line_end[0] - line_start[0])
-            tick = Line(
-                np.array([x, -0.15, 0]),
-                np.array([x, 0.15, 0]),
+
+            # upside-down triangle marker
+            tri = Polygon(
+                np.array([x, 0.00, 0]),  # bottom tip touches the line
+                np.array([x - 0.06, 0.13, 0]),  # top-left
+                np.array([x + 0.06, 0.13, 0]),  # top-right
                 color=color,
-                stroke_width=2,
+                fill_color=color,
+                fill_opacity=1,
+                stroke_width=0,
             )
+
             mark_label = Text(label_text, font_size=11, color=color)
-            mark_label.next_to(tick, UP, buff=0.15)
-            marker = VGroup(tick, mark_label)
+            mark_label.next_to(tri, UP, buff=0.12)
+
+            marker = VGroup(tri, mark_label)
             markers.add(marker)
 
         self.play(
@@ -371,7 +382,7 @@ class AgentArchitectures(Scene):
         retry_arrow = CurvedArrow(
             fail_x.get_right() + RIGHT * 0.1,
             fixed_badge.get_bottom() + DOWN * 0.1,
-            angle=-PI / 3,
+            angle=PI / 3,
             color=RED,
             stroke_width=1.2,
             tip_length=0.12,
@@ -411,22 +422,20 @@ class AgentArchitectures(Scene):
         phase_groups = VGroup()
         phase_positions = []
         for label_text, color, icon_file, angle in phase_data:
-            pos = ORIGIN + phase_radius * np.array(
-                [np.cos(angle), np.sin(angle), 0]
-            )
+            pos = ORIGIN + phase_radius * np.array([np.cos(angle), np.sin(angle), 0])
             phase_positions.append(pos)
 
             icon = make_svg_icon(icon_file, color=color, height=0.55)
             icon.move_to(pos)
 
             label = Text(label_text, font_size=14, color=color)
-            label.next_to(icon, DOWN, buff=0.15)
+            label.next_to(icon, 1.5 * DOWN, buff=0.3)
 
             # Subtle background circle
             bg_circle = Circle(
                 radius=0.5,
                 color=color,
-                stroke_width=1,
+                stroke_width=5,
                 stroke_opacity=0.3,
                 fill_color=color,
                 fill_opacity=0.04,
@@ -449,8 +458,9 @@ class AgentArchitectures(Scene):
             end_pt = end_pos - direction_norm * 0.6
 
             arc = ArcBetweenPoints(
-                start_pt, end_pt,
-                angle=PI / 5,
+                start_pt,
+                end_pt,
+                angle=-PI / 3,
                 color=arrow_colors[i],
                 stroke_width=2,
                 stroke_opacity=0.6,
@@ -479,7 +489,10 @@ class AgentArchitectures(Scene):
 
         self.play(
             LaggedStart(
-                *[AnimationGroup(Create(la[0]), GrowArrow(la[1])) for la in loop_arrows],
+                *[
+                    AnimationGroup(Create(la[0]), GrowArrow(la[1]))
+                    for la in loop_arrows
+                ],
                 lag_ratio=0.2,
             ),
             run_time=0.8,
@@ -517,7 +530,9 @@ class AgentArchitectures(Scene):
         self.play(FadeOut(signal_group), run_time=0.2)
 
         # ── "structured but still fixed" label ──
-        note = Text("structured loop — but prompt is still fixed", font_size=13, color=DIM)
+        note = Text(
+            "structured loop — but prompt is still fixed", font_size=13, color=DIM
+        )
         note.move_to(DOWN * 3.2)
         self.play(FadeIn(note, shift=UP * 0.05), run_time=0.4)
         # [26:55] Three critical safety concerns
@@ -532,9 +547,13 @@ class AgentArchitectures(Scene):
     def _part_4_learnable_prompt(self):
         # ── Attempt 1 panel (left): agent tries and fails ──
         attempt_1 = RoundedRectangle(
-            width=3.2, height=3.5, corner_radius=0.12,
-            color=RED, stroke_width=1.5,
-            fill_color=RED, fill_opacity=0.03,
+            width=3.2,
+            height=3.5,
+            corner_radius=0.12,
+            color=RED,
+            stroke_width=1.5,
+            fill_color=RED,
+            fill_opacity=0.03,
         )
         attempt_1.move_to(LEFT * 3.5)
 
@@ -557,11 +576,15 @@ class AgentArchitectures(Scene):
 
         # ── Reflection arrow (center): retrospective model ──
         retro_box = RoundedRectangle(
-            width=2.4, height=1.4, corner_radius=0.12,
-            color=PURPLE, stroke_width=2,
-            fill_color=PURPLE, fill_opacity=0.06,
+            width=2.4,
+            height=1.4,
+            corner_radius=0.12,
+            color=PURPLE,
+            stroke_width=2,
+            fill_color=PURPLE,
+            fill_opacity=0.06,
         )
-        retro_box.move_to(ORIGIN + UP * 0.3)
+        retro_box.move_to(ORIGIN + UP * 0.7)
 
         retro_brain = make_svg_icon("brain.svg", color=PURPLE, height=0.5)
         retro_brain.move_to(retro_box.get_center() + UP * 0.15)
@@ -585,8 +608,8 @@ class AgentArchitectures(Scene):
         for i, lesson in enumerate(lessons):
             pill = make_pill(lesson, color=PURPLE, font_size=10, fill_opacity=0.1)
             memory_pills.add(pill)
-        memory_pills.arrange(DOWN, buff=0.15)
-        memory_pills.move_to(ORIGIN + DOWN * 1.8)
+        memory_pills.arrange(DOWN, buff=0.5)
+        memory_pills.move_to(ORIGIN + DOWN * 1.2)
 
         memory_label = Text("lessons", font_size=11, color=PURPLE)
         memory_label.next_to(memory_pills, LEFT, buff=0.3)
@@ -606,9 +629,13 @@ class AgentArchitectures(Scene):
 
         # ── Attempt 2 panel (right): improved ──
         attempt_2 = RoundedRectangle(
-            width=3.2, height=3.5, corner_radius=0.12,
-            color=GREEN, stroke_width=1.5,
-            fill_color=GREEN, fill_opacity=0.03,
+            width=3.2,
+            height=3.5,
+            corner_radius=0.12,
+            color=GREEN,
+            stroke_width=1.5,
+            fill_color=GREEN,
+            fill_opacity=0.03,
         )
         attempt_2.move_to(RIGHT * 3.5)
 
@@ -711,7 +738,9 @@ class AgentArchitectures(Scene):
         )
         self.play(
             FadeIn(success_mark, scale=1.5),
-            Flash(success_mark.get_center(), color=GREEN, flash_radius=0.4, num_lines=8),
+            Flash(
+                success_mark.get_center(), color=GREEN, flash_radius=0.4, num_lines=8
+            ),
             run_time=0.4,
         )
         # [27:30] When things go wrong, can the agent self-correct?
@@ -727,9 +756,13 @@ class AgentArchitectures(Scene):
         # ── 5a: LLM predicts tokens vs LAM predicts actions ──
         # LEFT: token prediction
         llm_box = RoundedRectangle(
-            width=2.0, height=1.2, corner_radius=0.12,
-            color=ACCENT, stroke_width=1.8,
-            fill_color=ACCENT, fill_opacity=0.06,
+            width=2.0,
+            height=1.2,
+            corner_radius=0.12,
+            color=ACCENT,
+            stroke_width=1.8,
+            fill_color=ACCENT,
+            fill_opacity=0.06,
         )
         llm_box.move_to(LEFT * 3.5 + UP * 1.5)
         llm_lbl = Text("LLM", font_size=16, color=ACCENT)
@@ -746,16 +779,23 @@ class AgentArchitectures(Scene):
         tokens.next_to(llm_box, DOWN, buff=0.35)
 
         tok_arrow = Arrow(
-            llm_box.get_bottom(), tokens.get_top(),
-            buff=0.08, color=ACCENT, stroke_width=1.2,
+            llm_box.get_bottom(),
+            tokens.get_top(),
+            buff=0.08,
+            color=ACCENT,
+            stroke_width=1.2,
             max_tip_length_to_length_ratio=0.15,
         )
 
         # RIGHT: action prediction
         lam_box = RoundedRectangle(
-            width=2.0, height=1.2, corner_radius=0.12,
-            color=GREEN, stroke_width=2.5,
-            fill_color=GREEN, fill_opacity=0.08,
+            width=2.0,
+            height=1.2,
+            corner_radius=0.12,
+            color=GREEN,
+            stroke_width=2.5,
+            fill_color=GREEN,
+            fill_opacity=0.08,
         )
         lam_box.move_to(RIGHT * 3.5 + UP * 1.5)
         lam_lbl = Text("LAM", font_size=16, color=GREEN, weight=BOLD)
@@ -772,15 +812,21 @@ class AgentArchitectures(Scene):
         actions.next_to(lam_box, DOWN, buff=0.35)
 
         act_arrow = Arrow(
-            lam_box.get_bottom(), actions.get_top(),
-            buff=0.08, color=GREEN, stroke_width=1.2,
+            lam_box.get_bottom(),
+            actions.get_top(),
+            buff=0.08,
+            color=GREEN,
+            stroke_width=1.2,
             max_tip_length_to_length_ratio=0.15,
         )
 
         # Divider
         divider = DashedLine(
-            UP * 3.0, DOWN * 0.5,
-            color=DIM2, stroke_width=1, dash_length=0.1,
+            UP * 3.0,
+            DOWN * 0.5,
+            color=DIM2,
+            stroke_width=1,
+            dash_length=0.1,
         )
 
         # Vs label
@@ -792,7 +838,8 @@ class AgentArchitectures(Scene):
 
         self.play(
             FadeIn(llm_box, scale=0.9),
-            FadeIn(llm_lbl), FadeIn(llm_desc),
+            FadeIn(llm_lbl),
+            FadeIn(llm_desc),
             run_time=0.5,
         )
         self.play(
@@ -805,20 +852,27 @@ class AgentArchitectures(Scene):
 
         self.play(
             FadeIn(lam_box, scale=0.9),
-            FadeIn(lam_lbl), FadeIn(lam_desc),
+            FadeIn(lam_lbl),
+            FadeIn(lam_desc),
             run_time=0.5,
         )
         self.play(
             GrowArrow(act_arrow),
-            LaggedStart(*[FadeIn(a, shift=DOWN * 0.05) for a in actions], lag_ratio=0.1),
+            LaggedStart(
+                *[FadeIn(a, shift=DOWN * 0.05) for a in actions], lag_ratio=0.1
+            ),
             run_time=0.5,
         )
 
         # Emphasize LAM
         lam_glow = SurroundingRectangle(
             VGroup(lam_box, actions),
-            color=GREEN, buff=0.15, corner_radius=0.15,
-            stroke_width=2, fill_color=GREEN, fill_opacity=0.03,
+            color=GREEN,
+            buff=0.15,
+            corner_radius=0.15,
+            stroke_width=2,
+            fill_color=GREEN,
+            fill_opacity=0.03,
         )
         self.play(Create(lam_glow), run_time=0.4)
         pulse_rect = lam_glow.copy().set_stroke(GREEN, width=3)
@@ -834,9 +888,13 @@ class AgentArchitectures(Scene):
 
         # LEFT CARD: HotPotQA-style trajectory
         card_left = RoundedRectangle(
-            width=4.8, height=5.0, corner_radius=0.12,
-            color=ACCENT, stroke_width=1.5,
-            fill_color=ACCENT, fill_opacity=0.03,
+            width=4.8,
+            height=5.0,
+            corner_radius=0.12,
+            color=ACCENT,
+            stroke_width=1.5,
+            fill_color=ACCENT,
+            fill_opacity=0.03,
         )
         card_left.move_to(LEFT * 3.0)
 
@@ -872,9 +930,13 @@ class AgentArchitectures(Scene):
 
         # RIGHT CARD: WebShop-style trajectory
         card_right = RoundedRectangle(
-            width=4.8, height=5.0, corner_radius=0.12,
-            color=TEAL, stroke_width=1.5,
-            fill_color=TEAL, fill_opacity=0.03,
+            width=4.8,
+            height=5.0,
+            corner_radius=0.12,
+            color=TEAL,
+            stroke_width=1.5,
+            fill_color=TEAL,
+            fill_opacity=0.03,
         )
         card_right.move_to(RIGHT * 3.0)
 
@@ -904,7 +966,9 @@ class AgentArchitectures(Scene):
         # Stacked shadows for right card
         shadow_r1 = card_right.copy().set_stroke(DIM2, width=0.8).set_fill(opacity=0.01)
         shadow_r1.shift(RIGHT * 0.08 + DOWN * 0.08)
-        shadow_r2 = card_right.copy().set_stroke(DIM2, width=0.5).set_fill(opacity=0.005)
+        shadow_r2 = (
+            card_right.copy().set_stroke(DIM2, width=0.5).set_fill(opacity=0.005)
+        )
         shadow_r2.shift(RIGHT * 0.16 + DOWN * 0.16)
 
         # Top title
@@ -916,7 +980,8 @@ class AgentArchitectures(Scene):
 
         # Left card with shadow stack
         self.play(
-            FadeIn(shadow_l2), FadeIn(shadow_l1),
+            FadeIn(shadow_l2),
+            FadeIn(shadow_l1),
             FadeIn(card_left, scale=0.95),
             FadeIn(cl_title),
             run_time=0.5,
@@ -931,7 +996,8 @@ class AgentArchitectures(Scene):
 
         # Right card with shadow stack
         self.play(
-            FadeIn(shadow_r2), FadeIn(shadow_r1),
+            FadeIn(shadow_r2),
+            FadeIn(shadow_r1),
             FadeIn(card_right, scale=0.95),
             FadeIn(cr_title),
             run_time=0.5,
@@ -953,16 +1019,21 @@ class AgentArchitectures(Scene):
 
         for row in action_rows_left + action_rows_right:
             hl = SurroundingRectangle(
-                row, color=GREEN, buff=0.06,
-                corner_radius=0.04, stroke_width=1.5,
-                fill_color=GREEN, fill_opacity=0.06,
+                row,
+                color=GREEN,
+                buff=0.06,
+                corner_radius=0.04,
+                stroke_width=1.5,
+                fill_color=GREEN,
+                fill_opacity=0.06,
             )
             self.play(Create(hl), run_time=0.15)
 
         # Bottom note
         train_note = Text(
             "LAM is trained on these trajectories",
-            font_size=14, color=GREEN,
+            font_size=14,
+            color=GREEN,
         )
         train_note.move_to(DOWN * 3.3)
         self.play(FadeIn(train_note, shift=UP * 0.05), run_time=0.4)
@@ -978,9 +1049,13 @@ class AgentArchitectures(Scene):
     def _part_6_multi_agent(self):
         # ── Central controller ──
         controller = RoundedRectangle(
-            width=2.0, height=1.0, corner_radius=0.12,
-            color=GOLD, stroke_width=2,
-            fill_color=GOLD, fill_opacity=0.08,
+            width=2.0,
+            height=1.0,
+            corner_radius=0.12,
+            color=GOLD,
+            stroke_width=2,
+            fill_color=GOLD,
+            fill_opacity=0.08,
         )
         controller.move_to(ORIGIN)
         ctrl_icon = make_svg_icon("brain.svg", color=GOLD, height=0.45)
@@ -990,19 +1065,23 @@ class AgentArchitectures(Scene):
 
         # ── Specialized agent nodes around the controller ──
         agent_configs = [
-            ("planner", ACCENT, "brain.svg", UP * 2.2),
-            ("searcher", TEAL, "browser.svg", RIGHT * 3.5 + UP * 0.8),
-            ("coder", GREEN, "gear.svg", RIGHT * 3.5 + DOWN * 0.8),
-            ("reviewer", PURPLE, "eye.svg", DOWN * 2.2),
+            ("planner", ACCENT, "brain.svg", UP * 2.2 + LEFT * 3.5),
+            ("searcher", TEAL, "browser.svg", RIGHT * 3.5 + UP * 2.2),
+            ("coder", GREEN, "gear.svg", RIGHT * 3.5 + DOWN * 2.2),
+            ("reviewer", PURPLE, "eye.svg", DOWN * 2.2 + LEFT * 3.5),
         ]
 
         agent_nodes = VGroup()
         node_positions = []
         for name, color, icon_file, pos in agent_configs:
             node_box = RoundedRectangle(
-                width=1.8, height=0.9, corner_radius=0.1,
-                color=color, stroke_width=1.5,
-                fill_color=color, fill_opacity=0.06,
+                width=1.8,
+                height=0.9,
+                corner_radius=0.1,
+                color=color,
+                stroke_width=1.5,
+                fill_color=color,
+                fill_opacity=0.06,
             )
             node_box.move_to(pos)
 
@@ -1021,11 +1100,12 @@ class AgentArchitectures(Scene):
         for pos in node_positions:
             direction = pos - ORIGIN
             direction_norm = direction / np.linalg.norm(direction)
-            start_pt = ORIGIN + direction_norm * 0.7
-            end_pt = pos - direction_norm * 0.65
+            start_pt = ORIGIN + direction_norm * 1.2
+            end_pt = pos - direction_norm * 1.2
 
             arr = Arrow(
-                start_pt, end_pt,
+                start_pt,
+                end_pt,
                 buff=0,
                 color=GOLD,
                 stroke_width=1.2,
@@ -1084,8 +1164,13 @@ class AgentArchitectures(Scene):
             )
             if not np.allclose(pos, ORIGIN, atol=0.1):
                 self.play(
-                    Flash(pos, color=GOLD, flash_radius=0.25,
-                          num_lines=5, line_length=0.06),
+                    Flash(
+                        pos,
+                        color=GOLD,
+                        flash_radius=0.25,
+                        num_lines=5,
+                        line_length=0.06,
+                    ),
                     run_time=0.15,
                 )
 
@@ -1094,8 +1179,12 @@ class AgentArchitectures(Scene):
         # ── Highlight the orchestration complexity ──
         orch_glow = SurroundingRectangle(
             VGroup(controller, *agent_nodes),
-            color=GOLD, buff=0.4, corner_radius=0.2,
-            stroke_width=1.5, fill_color=GOLD, fill_opacity=0.02,
+            color=GOLD,
+            buff=0.4,
+            corner_radius=0.2,
+            stroke_width=1.5,
+            fill_color=GOLD,
+            fill_opacity=0.02,
         )
         self.play(Create(orch_glow), run_time=0.4)
 
@@ -1131,7 +1220,7 @@ class AgentArchitectures(Scene):
     def _part_7_closing_spectrum(self):
         # ── Axes ──
         x_axis = Arrow(
-            LEFT * 5.5 + DOWN * 2.5,
+            LEFT * 5.0 + DOWN * 2.5,
             RIGHT * 5.5 + DOWN * 2.5,
             buff=0,
             color=DIM,
@@ -1154,8 +1243,10 @@ class AgentArchitectures(Scene):
         y_label.next_to(y_axis, LEFT, buff=0.15)
 
         self.play(
-            GrowArrow(x_axis), GrowArrow(y_axis),
-            FadeIn(x_label), FadeIn(y_label),
+            GrowArrow(x_axis),
+            GrowArrow(y_axis),
+            FadeIn(x_label),
+            FadeIn(y_label),
             run_time=0.6,
         )
 
@@ -1170,9 +1261,13 @@ class AgentArchitectures(Scene):
         stair_blocks = VGroup()
         for label_text, color, pos, w, h in stair_data:
             block = RoundedRectangle(
-                width=w, height=h, corner_radius=0.1,
-                color=color, stroke_width=2,
-                fill_color=color, fill_opacity=0.2,
+                width=w,
+                height=h,
+                corner_radius=0.1,
+                color=color,
+                stroke_width=2,
+                fill_color=color,
+                fill_opacity=0.2,
             )
             block.move_to(pos)
             label = Text(label_text, font_size=12, color=WHITE, weight=BOLD)
@@ -1206,7 +1301,7 @@ class AgentArchitectures(Scene):
         for i in range(len(stair_blocks) - 1):
             line = DashedLine(
                 stair_blocks[i][0].get_right(),
-                stair_blocks[i + 1][0].get_left(),
+                stair_blocks[i + 1][0].get_bottom(),
                 color=DIM2,
                 stroke_width=1,
                 dash_length=0.06,
