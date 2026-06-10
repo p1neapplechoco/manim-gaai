@@ -1,26 +1,6 @@
-import sys
-from pathlib import Path
-
 from utils.artifacts import *
-
-CMD = Path(sys.argv[0]).name.lower()
-if "manimgl" in CMD:
-    from manimlib import *
-else:
-    from manim import *
-
-from utils.tex_text import Text
-
-BASE_DIR = Path("/home/pineapple/Desktop/projects/manim-gaai/")
-
-WHITE = "#F5F5F5"
-ACCENT = "#4FC3F7"
-GOLD = "#FFD54F"
-SEPIA = "#C8A96E"
-SEPIA_DARK = "#0D0900"
-DIM = "#8A7676"
-DIM2 = "#615B5B"
-RED = "#FF5252"
+from utils.manim_compat import *
+from utils.theme import *
 
 
 class NgramToRNN(Scene):

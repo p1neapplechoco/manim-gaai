@@ -1,5 +1,6 @@
-from manim import *
 import numpy as np
+
+from utils.manim_compat import *
 
 VIEWBOX_WIDTH = 870
 VIEWBOX_HEIGHT = 470

@@ -9,6 +9,8 @@ _LATEX_ESCAPES = {
     "_": r"\_",
     "{": r"\{",
     "}": r"\}",
+    "<": r"$<$",
+    ">": r"$>$",
     "~": r"\textasciitilde{}",
     "^": r"\textasciicircum{}",
     "\\": r"\textbackslash{}",

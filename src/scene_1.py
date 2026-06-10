@@ -1,19 +1,7 @@
-import sys
 import numpy as np
-from pathlib import Path
 
-CMD = Path(sys.argv[0]).name.lower()
-
-if "manimgl" in CMD:
-    from manimlib import *
-else:
-    from manim import *
-
-from utils.tex_text import Text
-
-from pathlib import Path
-
-BASE_DIR = Path("/home/pineapple/Desktop/projects/manim-gaai")
+from utils.manim_compat import *
+from utils.theme import *
 
 
 class IntroductionGAA(Scene):
@@ -73,17 +61,17 @@ class IntroductionGAA(Scene):
 
     def construct(self):
         # Crowd and robot interaction
-        robot = SVGMobject(str(BASE_DIR / "assets/svgs/robot.svg"))
+        robot = SVGMobject(str(svg_path("robot.svg")))
         robot.scale(1.25)
         robot.set_color(WHITE)
         robot.move_to(ORIGIN)
 
-        crowd = SVGMobject(str(BASE_DIR / "assets/svgs/crowd.svg"))
+        crowd = SVGMobject(str(svg_path("crowd.svg")))
         crowd.scale(0.8)
         crowd.set_color(WHITE)
         crowd.to_edge(LEFT)
 
-        computer = SVGMobject(str(BASE_DIR / "assets/svgs/computer.svg"))
+        computer = SVGMobject(str(svg_path("computer.svg")))
         computer.set_width(crowd.get_width())
         computer.set_color(WHITE)
         computer.to_edge(RIGHT)

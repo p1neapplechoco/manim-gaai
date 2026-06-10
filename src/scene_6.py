@@ -1,26 +1,9 @@
-import sys
 from collections import namedtuple
-from pathlib import Path
 
 import numpy as np
 
-CMD = Path(sys.argv[0]).name.lower()
-if "manimgl" in CMD:
-    from manimlib import *
-else:
-    from manim import *
-
-from utils.tex_text import Text
-
-
-WHITE = "#F5F5F5"
-BG = "#000000"
-ACCENT = "#4FC3F7"
-GOLD = "#FFD54F"
-GREEN = "#66BB6A"
-DIM = "#8A8A8A"
-DIM2 = "#4A4A4A"
-RED = "#FF5252"
+from utils.manim_compat import *
+from utils.theme import *
 
 ScalingFactor = namedtuple(
     "ScalingFactor",

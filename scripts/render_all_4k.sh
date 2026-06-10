@@ -40,37 +40,7 @@ if (( ! DRY_RUN )) && ! command -v "$MANIM_BIN" >/dev/null 2>&1; then
 fi
 
 discover_scenes() {
-    python - <<'PY'
-import ast
-import re
-from pathlib import Path
-
-
-def natural_key(path):
-    return [
-        int(part) if part.isdigit() else part
-        for part in re.split(r"(\d+)", str(path))
-    ]
-
-
-def base_name(base):
-    if isinstance(base, ast.Name):
-        return base.id
-    if isinstance(base, ast.Attribute):
-        return base.attr
-    if isinstance(base, ast.Subscript):
-        return base_name(base.value)
-    return ""
-
-
-for path in sorted(Path("src").glob("scene_*.py"), key=natural_key):
-    tree = ast.parse(path.read_text(), filename=str(path))
-    for node in tree.body:
-        if not isinstance(node, ast.ClassDef):
-            continue
-        if any(base_name(base).endswith("Scene") for base in node.bases):
-            print(f"{path} {node.name}")
-PY
+    PYTHONPATH="$ROOT_DIR/src${PYTHONPATH:+:$PYTHONPATH}" python -m utils.scene_discovery
 }
 
 mapfile -t SCENES < <(discover_scenes)
@@ -83,7 +53,10 @@ fi
 for entry in "${SCENES[@]}"; do
     read -r scene_file scene_class <<<"$entry"
     command=("$MANIM_BIN" "$QUALITY_FLAG" "$scene_file" "$scene_class")
-    printf '%q ' "${command[@]}"
+    printf '%q' "${command[0]}"
+    for arg in "${command[@]:1}"; do
+        printf ' %q' "$arg"
+    done
     printf '\n'
 
     if (( ! DRY_RUN )); then

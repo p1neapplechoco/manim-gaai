@@ -1,28 +1,8 @@
-import sys
 import numpy as np
-from pathlib import Path
 
 from utils.artifacts import *
-
-CMD = Path(sys.argv[0]).name.lower()
-if "manimgl" in CMD:
-    from manimlib import *
-else:
-    from manim import *
-
-from utils.tex_text import Text
-
-BASE_DIR = Path("/home/pineapple/Desktop/projects/manim-gaai/")
-
-WHITE = "#F5F5F5"
-ACCENT = "#4FC3F7"
-GOLD = "#FFD54F"
-SEPIA = "#C8A96E"
-SEPIA_DARK = "#0D0900"
-DIM = "#8A7676"
-DIM2 = "#615B5B"
-RED = "#FF5252"
-GREEN = "#66BB6A"
+from utils.manim_compat import *
+from utils.theme import *
 
 
 class RNNDeepDive(Scene):
@@ -438,7 +418,7 @@ class RNNDeepDive(Scene):
         # ================================================================
 
         # Left: human head metaphor
-        head = SVGMobject(str(BASE_DIR / "assets" / "svgs" / "brain.svg"))
+        head = SVGMobject(str(svg_path("brain.svg")))
 
         head.set_color(WHITE)
         head.set_stroke(WHITE, width=3, opacity=1)
@@ -1236,7 +1216,16 @@ class RNNDeepDive(Scene):
         node_radius = 2.0
         nodes = VGroup()
         node_labels = VGroup()
-        token_names_graph = ["t₁", "t₂", "t₃", "t₄", "t₅", "t₆", "t₇", "t₈"]
+        token_names_graph = [
+            "$t_1$",
+            "$t_2$",
+            "$t_3$",
+            "$t_4$",
+            "$t_5$",
+            "$t_6$",
+            "$t_7$",
+            "$t_8$",
+        ]
 
         for i in range(n_nodes):
             angle = i * TAU / n_nodes - PI / 2
@@ -1253,7 +1242,7 @@ class RNNDeepDive(Scene):
             node.move_to(pos)
             nodes.add(node)
 
-            label = Text(token_names_graph[i], font_size=12, color=WHITE)
+            label = Tex(token_names_graph[i], font_size=12, color=WHITE)
             # Place label slightly outside the circle
             label_pos = pos + (pos - DOWN * 0.5) / node_radius * 0.3
             label.move_to(label_pos)

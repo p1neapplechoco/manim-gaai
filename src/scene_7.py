@@ -1,27 +1,8 @@
-import sys
 import numpy as np
-from pathlib import Path
 
-CMD = Path(sys.argv[0]).name.lower()
-if "manimgl" in CMD:
-    from manimlib import *
-else:
-    from manim import *
-
-from utils.tex_text import Text
-
-BASE_DIR = Path("/home/pineapple/Desktop/projects/manim-gaai/")
-
-WHITE = "#F5F5F5"
-BG = "#000000"
-ACCENT = "#4FC3F7"
-GOLD = "#FFD54F"
-GREEN = "#66BB6A"
-DIM = "#8A8A8A"
-DIM2 = "#4A4A4A"
-RED = "#FF5252"
-PURPLE = "#B39DDB"
-ORANGE = "#FFB74D"
+from utils.manim_compat import *
+from utils.mobjects import make_pill
+from utils.theme import *
 
 PATCH_COLORS = [
     "#5C6BC0",
@@ -48,7 +29,7 @@ PATCH_COLORS = [
 def make_robot(scale_factor=1.0):
     """Build the robot from the project SVG asset."""
     robot = SVGMobject(
-        str(BASE_DIR / "assets" / "svgs" / "robot.svg"),
+        str(svg_path("robot.svg")),
         fill_color=WHITE,
         stroke_color=WHITE,
         stroke_width=1.2,
@@ -121,22 +102,6 @@ def make_patch_token(color, size=0.28):
         fill_color=color,
         fill_opacity=0.7,
     )
-
-
-def make_pill(text_str, color=ACCENT, font_size=16):
-    """A rounded pill-shaped label."""
-    label = Text(text_str, font_size=font_size, color=WHITE)
-    pill = RoundedRectangle(
-        width=label.width + 0.4,
-        height=label.height + 0.22,
-        corner_radius=0.15,
-        color=color,
-        stroke_width=1.4,
-        fill_color=color,
-        fill_opacity=0.15,
-    )
-    pill.move_to(label.get_center())
-    return VGroup(pill, label)
 
 
 def make_grid_world():
@@ -229,7 +194,7 @@ class MultimodalModels(Scene):
         # ==============================================================
 
         # Show the dog image
-        dog_img = ImageMobject(str(BASE_DIR / "assets" / "images" / "dancing_dog.jpg"))
+        dog_img = ImageMobject(str(image_path("dancing_dog.jpg")))
         dog_img.scale_to_fit_height(3.0)
         dog_img.move_to(LEFT * 2.5)
 
@@ -248,7 +213,7 @@ class MultimodalModels(Scene):
         self.wait(1.0)
 
         # Brain SVG on the right
-        brain = SVGMobject(str(BASE_DIR / "assets" / "svgs" / "brain.svg"))
+        brain = SVGMobject(str(svg_path("brain.svg")))
         brain.set_color(WHITE)
         brain.set_stroke(WHITE, width=1.2)
         brain.scale_to_fit_height(1.8)
@@ -319,7 +284,7 @@ class MultimodalModels(Scene):
         # ================================================================
 
         # --- 1a. Show the dog image ---
-        dog_img = ImageMobject(str(BASE_DIR / "assets" / "images" / "dancing_dog.jpg"))
+        dog_img = ImageMobject(str(image_path("dancing_dog.jpg")))
         dog_img.set_height(3.2)
         dog_img.move_to(LEFT * 0.5 + UP * 0.3)
 

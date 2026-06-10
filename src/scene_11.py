@@ -1,126 +1,15 @@
-import sys
 import numpy as np
-from pathlib import Path
 
-from pyparsing import line_start
-
-CMD = Path(sys.argv[0]).name.lower()
-if "manimgl" in CMD:
-    from manimlib import *
-else:
-    from manim import *
-
-from utils.tex_text import Text
-
-BASE_DIR = Path("/home/pineapple/Desktop/projects/manim-gaai/")
-
-WHITE = "#F5F5F5"
-BG = "#000000"
-ACCENT = "#4FC3F7"
-GOLD = "#FFD54F"
-DIM = "#8A7676"
-DIM2 = "#615B5B"
-RED = "#FF5252"
-GREEN = "#66BB6A"
-PURPLE = "#B39DDB"
-ORANGE = "#FFB74D"
-TEAL = "#4DB6AC"
-PINK = "#F48FB1"
-
-
-# ── helpers ─────────────────────────────────────────────────────────
-
-
-def make_svg_icon(filename, color=WHITE, height=1.2):
-    """Load a B&W SVG and style it."""
-    svg = SVGMobject(str(BASE_DIR / "assets" / "svgs" / filename))
-    svg.set_color(color)
-    svg.set_stroke(color, width=1.2)
-    svg.scale_to_fit_height(height)
-    return svg
-
-
-def make_pill(text_str, color=ACCENT, font_size=16, fill_opacity=0.15):
-    """A rounded pill-shaped label."""
-    label = Text(text_str, font_size=font_size, color=WHITE)
-    pill = RoundedRectangle(
-        width=label.width + 0.4,
-        height=label.height + 0.22,
-        corner_radius=0.15,
-        color=color,
-        stroke_width=1.4,
-        fill_color=color,
-        fill_opacity=fill_opacity,
-    )
-    pill.move_to(label.get_center())
-    return VGroup(pill, label)
-
-
-def make_token_box(label_text, color=ACCENT, font_size=14, width=None):
-    """A small rounded box with a label, representing a token."""
-    label = Text(label_text, font_size=font_size, color=WHITE)
-    box_w = width or (label.width + 0.3)
-    box = RoundedRectangle(
-        width=box_w,
-        height=label.height + 0.2,
-        corner_radius=0.06,
-        color=color,
-        stroke_width=1.5,
-        fill_color=color,
-        fill_opacity=0.15,
-    )
-    label.move_to(box)
-    return VGroup(box, label)
-
-
-def make_hexagon(side_length=0.8, color=ACCENT, fill_opacity=0.08):
-    """A glowing hexagon shape (LLM core)."""
-    hex_shape = RegularPolygon(
-        n=6,
-        color=color,
-        stroke_width=2.5,
-        fill_color=color,
-        fill_opacity=fill_opacity,
-    )
-    hex_shape.scale(side_length)
-    return hex_shape
-
-
-def make_code_lines(center, n_lines=6, max_width=1.6, color=DIM):
-    """Simple horizontal lines representing lines of code."""
-    lines = VGroup()
-    widths = [max_width * w for w in [0.9, 0.6, 1.0, 0.45, 0.75, 0.85, 0.5, 0.95]]
-    for i in range(n_lines):
-        w = widths[i % len(widths)]
-        line = RoundedRectangle(
-            width=w,
-            height=0.06,
-            corner_radius=0.02,
-            color=color,
-            stroke_width=0,
-            fill_color=color,
-            fill_opacity=0.5,
-        )
-        lines.add(line)
-    lines.arrange(DOWN, buff=0.08, aligned_edge=LEFT)
-    lines.move_to(center)
-    return lines
-
-
-def make_stair_block(label_text, color, width=2.2, height=0.7):
-    """A single stair step block for the spectrum chart."""
-    block = RoundedRectangle(
-        width=width,
-        height=height,
-        corner_radius=0.1,
-        color=color,
-        stroke_width=2,
-        fill_color=color,
-        fill_opacity=0.2,
-    )
-    label = Text(label_text, font_size=13, color=WHITE, weight=BOLD)
-    label.move_to(block.get_center())
-    return VGroup(block, label)
+from utils.manim_compat import *
+from utils.mobjects import (
+    make_code_lines,
+    make_hexagon,
+    make_pill,
+    make_stair_block,
+    make_svg_icon,
+    make_token_box,
+)
+from utils.theme import *
 
 
 class AgentArchitectures(Scene):

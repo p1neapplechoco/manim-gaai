@@ -1,90 +1,9 @@
-import sys
 import numpy as np
-from pathlib import Path
 
-CMD = Path(sys.argv[0]).name.lower()
-if "manimgl" in CMD:
-    from manimlib import *
-else:
-    from manim import *
+from utils.manim_compat import *
+from utils.mobjects import make_hexagon, make_pill, make_svg_icon, make_token_box
+from utils.theme import *
 
-from utils.tex_text import Text
-
-BASE_DIR = Path("/home/pineapple/Desktop/projects/manim-gaai/")
-
-WHITE = "#F5F5F5"
-BG = "#000000"
-ACCENT = "#4FC3F7"
-GOLD = "#FFD54F"
-DIM = "#8A7676"
-DIM2 = "#615B5B"
-RED = "#FF5252"
-GREEN = "#66BB6A"
-PURPLE = "#B39DDB"
-ORANGE = "#FFB74D"
-TEAL = "#4DB6AC"
-PINK = "#F48FB1"
-
-
-# ── helpers ─────────────────────────────────────────────────────────
-
-
-def make_svg_icon(filename, color=WHITE, height=1.2):
-    """Load a B&W SVG and style it."""
-    svg = SVGMobject(str(BASE_DIR / "assets" / "svgs" / filename))
-    svg.set_color(color)
-    svg.set_stroke(color, width=1.2)
-    svg.scale_to_fit_height(height)
-    return svg
-
-
-def make_pill(text_str, color=ACCENT, font_size=16, fill_opacity=0.15):
-    """A rounded pill-shaped label."""
-    label = Text(text_str, font_size=font_size, color=WHITE)
-    pill = RoundedRectangle(
-        width=label.width + 0.4,
-        height=label.height + 0.22,
-        corner_radius=0.15,
-        color=color,
-        stroke_width=1.4,
-        fill_color=color,
-        fill_opacity=fill_opacity,
-    )
-    pill.move_to(label.get_center())
-    return VGroup(pill, label)
-
-
-def make_token_box(label_text, color=ACCENT, font_size=14, width=None):
-    """A small rounded box with a label, representing a token."""
-    label = Text(label_text, font_size=font_size, color=WHITE)
-    box_w = width or (label.width + 0.3)
-    box = RoundedRectangle(
-        width=box_w,
-        height=label.height + 0.2,
-        corner_radius=0.06,
-        color=color,
-        stroke_width=1.5,
-        fill_color=color,
-        fill_opacity=0.15,
-    )
-    label.move_to(box)
-    return VGroup(box, label)
-
-
-def make_hexagon(side_length=0.8, color=ACCENT, fill_opacity=0.08):
-    """A glowing hexagon shape (LLM core)."""
-    hex_shape = RegularPolygon(
-        n=6,
-        color=color,
-        stroke_width=2.5,
-        fill_color=color,
-        fill_opacity=fill_opacity,
-    )
-    hex_shape.scale(side_length)
-    return hex_shape
-
-
-# ── Model data for the timeline ─────────────────────────────────────
 
 MODEL_DATA = [
     # (year, name, params_billions, is_slm)
