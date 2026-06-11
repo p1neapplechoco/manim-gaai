@@ -1,0 +1,27 @@
+1
+00:00:00,000 --> 00:00:11,000
+System integration forces the question of task essence.
+
+2
+00:00:11,000 --> 00:00:22,000
+LfO historically moved from copying motion to extracting purpose.
+
+3
+00:00:22,000 --> 00:00:33,000
+The essence cannot be the observed trajectory.
+
+4
+00:00:33,000 --> 00:00:44,000
+Top-down LfO starts from the task outcome.
+
+5
+00:00:44,000 --> 00:00:55,000
+Recognition identifies the objects and relations that define state.
+
+6
+00:00:55,000 --> 00:01:07,000
+The key abstraction is a state transition.
+
+7
+00:01:07,000 --> 00:01:18,000
+The next chapter asks how state changes across domains.

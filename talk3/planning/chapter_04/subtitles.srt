@@ -1,0 +1,31 @@
+1
+00:00:00,000 --> 00:00:11,000
+A valid transition still needs a controller.
+
+2
+00:00:11,000 --> 00:00:22,000
+RL trains a policy to realize the transition under feedback.
+
+3
+00:00:22,000 --> 00:00:34,000
+Contact dimensions describe what is maintained, detached, or constrained.
+
+4
+00:00:34,000 --> 00:00:45,000
+Direction geometry turns dimensions into control choices.
+
+5
+00:00:45,000 --> 00:00:57,000
+Dimension transitions provide reusable control laws.
+
+6
+00:00:57,000 --> 00:01:09,000
+Place and insert decode transition targets into policies.
+
+7
+00:01:09,000 --> 00:01:21,000
+Drawer, door, and wipe agents share feedback execution.
+
+8
+00:01:21,000 --> 00:01:29,000
+The next chapter asks how grasping generalizes across object shape.

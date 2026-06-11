@@ -159,9 +159,15 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
-# these are bullshit files
-src/media/*
-
 # Manim render output
 media/
-/project/1780991733424
+talk1/src/media/
+talk2/src/media/
+talk3/src/media/
+
+# Kdenlive temp files
+/talk1/project/1780991733424
+
+# Temp cloned repos
+_tmp_talk2/
+_tmp_talk3/

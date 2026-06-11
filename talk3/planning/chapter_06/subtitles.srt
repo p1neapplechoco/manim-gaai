@@ -1,0 +1,27 @@
+1
+00:00:00,000 --> 00:00:11,000
+The errand robot tests whether the modules work together.
+
+2
+00:00:11,000 --> 00:00:22,000
+An errand is a sequence of grounded task models.
+
+3
+00:00:22,000 --> 00:00:33,000
+The humanoid body makes execution hardware-specific.
+
+4
+00:00:33,000 --> 00:00:44,000
+Recognition supplies objects, relations, and task cues.
+
+5
+00:00:44,000 --> 00:00:55,000
+Skill agents turn each task model into local action.
+
+6
+00:00:55,000 --> 00:01:07,000
+System integration exposes the representation bottleneck.
+
+7
+00:01:07,000 --> 00:01:18,000
+The next chapter asks what task essence really means.

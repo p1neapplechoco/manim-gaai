@@ -1,0 +1,27 @@
+1
+00:00:00,000 --> 00:00:11,000
+A state transition needs a domain-specific state space.
+
+2
+00:00:11,000 --> 00:00:22,000
+Polyhedral manipulation uses face contact as state.
+
+3
+00:00:22,000 --> 00:00:33,000
+Machine assembly uses part mating as state.
+
+4
+00:00:33,000 --> 00:00:44,000
+Knot tying uses topology as state.
+
+5
+00:00:44,000 --> 00:00:55,000
+Dance uses key pose and foot contact as state.
+
+6
+00:00:55,000 --> 00:01:07,000
+Different representations ignore different irrelevant variations.
+
+7
+00:01:07,000 --> 00:01:18,000
+The shared principle is task-relevant state change.

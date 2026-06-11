@@ -1,0 +1,35 @@
+1
+00:00:00,000 --> 00:00:11,000
+Grasping is a skill family, not one hand pose.
+
+2
+00:00:11,000 --> 00:00:22,000
+Taxonomy names grasp styles, but task purpose selects useful ones.
+
+3
+00:00:22,000 --> 00:00:33,000
+Closure turns grasp purpose into a testable condition.
+
+4
+00:00:33,000 --> 00:00:45,000
+Three prepared grasp agents cover distinct closure strategies.
+
+5
+00:00:45,000 --> 00:00:57,000
+Contact-web agents make grasp structure explicit.
+
+6
+00:00:57,000 --> 00:01:09,000
+Superquadrics provide a compact shape representation.
+
+7
+00:01:09,000 --> 00:01:21,000
+CNN and RL training connect perceived shape to grasp action.
+
+8
+00:01:21,000 --> 00:01:31,000
+One grasp agent can handle many object shapes.
+
+9
+00:01:31,000 --> 00:01:40,000
+Force strategy becomes part of the agent interface.

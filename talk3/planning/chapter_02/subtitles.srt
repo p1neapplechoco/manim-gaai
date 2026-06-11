@@ -1,0 +1,31 @@
+1
+00:00:00,000 --> 00:00:11,000
+A primitive action must change a meaningful contact state.
+
+2
+00:00:11,000 --> 00:00:22,000
+Face contact represents what motion is constrained.
+
+3
+00:00:22,000 --> 00:00:34,000
+Kuhn-Tucker constraints separate possible states from impossible ones.
+
+4
+00:00:34,000 --> 00:00:45,000
+Seven contact classes create forty-nine candidate transitions.
+
+5
+00:00:45,000 --> 00:00:57,000
+Physics reduces the graph to twenty executable transitions.
+
+6
+00:00:57,000 --> 00:01:09,000
+Observed tasks concentrate on a smaller frequent subset.
+
+7
+00:01:09,000 --> 00:01:21,000
+Physical manipulation agents are named edges in the filtered graph.
+
+8
+00:01:21,000 --> 00:01:29,000
+The next layer asks whether a physical edge makes semantic sense.

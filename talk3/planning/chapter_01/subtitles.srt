@@ -1,0 +1,32 @@
+1
+00:00:00,000 --> 00:00:12,000
+A generalist robot needs task intent that survives a new scene, layout, or body.
+
+2
+00:00:12,000 --> 00:00:25,000
+Direct replay stores a path. LfO abstracts the purpose behind the path.
+
+3
+00:00:25,000 --> 00:00:39,000
+Language and vision are compressed into a compact task model.
+
+4
+00:00:39,000 --> 00:00:51,000
+What-to-do names the primitive operation required by the task.
+
+5
+00:00:51,000 --> 00:01:03,000
+Where-to-do grounds that operation in objects, handles, axes, or target regions.
+
+6
+00:01:03,000 --> 00:01:18,000
+The skill-agent library supplies how-to-do through feedback-driven robot action.
+
+7
+00:01:18,000 --> 00:01:31,000
+The same task model can produce different feasible motions on different robot bodies.
+
+8
+00:01:31,000 --> 00:01:38,000
+Chapter two asks how the primitive skill vocabulary should be defined.
+

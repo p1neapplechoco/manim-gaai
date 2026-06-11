@@ -4,51 +4,57 @@ Animated video series on **Generalist Agent AI**, built with [Manim](https://www
 
 This project produces a set of explanatory animations covering the key ideas presented in the
 [CVPR 2024 Tutorial on Generalist Agent AI](https://multimodalagentai.github.io/).
-Each scene file corresponds to a self-contained segment of the talk, rendered as a
-publication-ready video at up to 4K resolution.
+The repository is organized as a monorepo with three independent talks, each with its own
+scenes, assets, and planning materials.
 
-## Content
+## Talks
 
-The animations follow the structure of the tutorial, beginning with an opening that
-motivates the shift from language models to generalist agents and progressing through
-the core concepts of multimodal perception, environment interaction, and autonomous
-decision-making.
-
-| Scene file | Topic |
-|---|---|
-| `scene_1.py` | Opening -- from language models to Generalist Agent AI |
-| `scene_2.py` -- `scene_12.py` | Subsequent segments of the tutorial |
-| `scene_talk1_title.py` | Talk 1 title card |
+| Talk | Title | Speaker | Scenes |
+|------|-------|---------|--------|
+| 1 | From Language Models to Generalist Agents | -- | `talk1/src/scene_*.py` |
+| 2 | Multimodal Foundation Models and Visual Grounding | Yong Jae Lee | `talk2/src/Scene*_vi.py` |
+| 3 | Agent Robotics: Learning-from-Observation | Katsushi Ikeuchi | `talk3/src/chapter*_v5.py` |
 
 ## Project Structure
 
 ```
 manim-gaai/
-  assets/
-    images/          Static image assets
-    svgs/            SVG icons and illustrations (robot, brain, browser, etc.)
-  project/           Kdenlive project files for final video editing
+  talk1/
+    src/
+      scene_1.py ... scene_12.py       Scene definitions
+      scene_talk1_title.py              Title card
+      utils/                            Shared utilities (theme, compat, text)
+    assets/
+      images/                           Static image assets
+      svgs/                             SVG icons and illustrations
+    project/                            Kdenlive project files
+
+  talk2/
+    src/
+      Scene1_vi.py ... Scene6_vi.py     Scene definitions
+    assets/                             Image assets (per-scene subdirectories)
+    script/                             Narrative scripts (markdown)
+    inputs/                             PDF slide deck
+
+  talk3/
+    src/
+      v5_common.py                      Shared base scene and design system
+      chapter01_v5.py ... chapter09_v5.py
+    planning/                           Storyboards, narrations, deck maps
+    inputs/                             PDF slide deck
+
   scripts/
-    render_all_4k.sh Batch-render all scenes in 4K
-  src/
-    scene_*.py       Manim scene definitions
-    utils/
-      manim_compat.py  Compatibility layer for Manim / ManimGL
-      tex_text.py      LaTeX-based Text rendering wrapper
-      theme.py         Shared color palette and asset path helpers
-      artifacts.py     Reusable visual components
-      mobjects.py      Custom Mobject definitions
+    render_all_4k.sh                    Batch-render all scenes in 4K
 ```
 
 ## Prerequisites
 
 - Python 3.10 or later
 - [Manim Community Edition](https://docs.manim.community/en/stable/installation.html)
-- A working LaTeX distribution (required by the `Tex`-based text renderer)
+- A working LaTeX distribution (required by Talk 1's Tex-based text renderer)
 - FFmpeg (bundled with most Manim installations)
 
-A Conda environment named `gaa-manim` is used in this project. Activate it before
-running any commands:
+A Conda environment named `gaa-manim` is used in this project:
 
 ```bash
 conda activate gaa-manim
@@ -58,40 +64,46 @@ conda activate gaa-manim
 
 ### Single scene
 
-Render a specific scene at the desired quality level:
-
 ```bash
-# Low quality preview (480p, 15 fps)
-manim -ql src/scene_1.py IntroductionGAA
+# Talk 1 -- low quality preview
+manim -ql talk1/src/scene_1.py IntroductionGAA
 
-# High quality (1080p, 60 fps)
-manim -qh src/scene_1.py IntroductionGAA
+# Talk 2 -- high quality
+manim -qh talk2/src/Scene1_vi.py Scene1
 
-# 4K production quality (2160p, 60 fps)
-manim -qk src/scene_1.py IntroductionGAA
+# Talk 3 -- 4K production
+manim -qk talk3/src/chapter02_v5.py Chapter02V5
 ```
 
 ### All scenes
 
-Use the provided batch script to render every scene at 4K:
+Use the batch script to render every scene at 4K:
 
 ```bash
 bash scripts/render_all_4k.sh
 ```
 
-Pass `--dry-run` to preview the commands without executing them. Set `MANIM_BIN` to
-override the default Manim executable path:
+Render a single talk:
 
 ```bash
-MANIM_BIN=/path/to/manim bash scripts/render_all_4k.sh
+bash scripts/render_all_4k.sh --talk 1
+bash scripts/render_all_4k.sh --talk 2
+bash scripts/render_all_4k.sh --talk 3
 ```
 
-Rendered videos are written to `src/media/videos/`.
+Pass `--dry-run` to preview commands without executing. Set `MANIM_BIN` to
+override the default Manim executable:
+
+```bash
+MANIM_BIN=/path/to/manim bash scripts/render_all_4k.sh --talk 2
+```
+
+Rendered videos are written to `talk*/src/media/videos/`.
 
 ## Post-Production
 
-Final assembly and editing is done in [Kdenlive](https://kdenlive.org/). Project files
-for each segment are located in the `project/` directory.
+Final assembly and editing for Talk 1 is done in [Kdenlive](https://kdenlive.org/).
+Project files are located in `talk1/project/`.
 
 ## Attribution
 

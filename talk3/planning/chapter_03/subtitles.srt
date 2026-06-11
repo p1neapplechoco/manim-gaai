@@ -1,0 +1,27 @@
+1
+00:00:00,000 --> 00:00:11,000
+A physical transition can still be the wrong action.
+
+2
+00:00:11,000 --> 00:00:22,000
+Tool-environment common sense is a task constraint.
+
+3
+00:00:22,000 --> 00:00:33,000
+Physical constraints decide what can move.
+
+4
+00:00:33,000 --> 00:00:44,000
+Semantic constraints decide what should move.
+
+5
+00:00:44,000 --> 00:00:55,000
+Semantic manipulation agents encode these role constraints.
+
+6
+00:00:55,000 --> 00:01:07,000
+The current library is a coverage map, not a complete world model.
+
+7
+00:01:07,000 --> 00:01:18,000
+The next problem is learning controllers for valid transitions.

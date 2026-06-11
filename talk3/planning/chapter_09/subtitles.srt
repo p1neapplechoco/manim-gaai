@@ -1,0 +1,31 @@
+1
+00:00:00,000 --> 00:00:11,000
+Imitation replays execution; LfO preserves task equivalence.
+
+2
+00:00:11,000 --> 00:00:22,000
+Symbolic teleoperation separates encoding from decoding.
+
+3
+00:00:22,000 --> 00:00:34,000
+High-level intent and local reaction belong on different sides.
+
+4
+00:00:34,000 --> 00:00:45,000
+Vision can encode intent because force is handled during execution.
+
+5
+00:00:45,000 --> 00:00:57,000
+Piaget frames skills as internalized action schemas.
+
+6
+00:00:57,000 --> 00:01:09,000
+Transfer succeeds when representation, grounding, and skill coverage align.
+
+7
+00:01:09,000 --> 00:01:21,000
+The full architecture is observation, task model, skill agents, and feedback.
+
+8
+00:01:21,000 --> 00:01:29,000
+Generalist behavior factorizes invariants from adaptation.
