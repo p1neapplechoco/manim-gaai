@@ -1,4 +1,4 @@
-﻿from manim import *
+from manim import *
 
 
 TEXT_FONT = "Times New Roman"
